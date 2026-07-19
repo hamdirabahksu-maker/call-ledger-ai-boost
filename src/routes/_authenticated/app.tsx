@@ -2,74 +2,91 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { seedDashboardIfEmpty } from "@/lib/dashboard.functions";
+import { createCheckoutSession } from "@/lib/checkout.functions";
 import {
   Zap, PhoneMissed, Phone, MessageSquare, Star, Calendar, DollarSign,
-  Clock, MapPin, Send, LogOut, Settings, TrendingUp,
+  Clock, MapPin, Send, LogOut, Settings, TrendingUp, Lock, ShieldAlert,
 } from "lucide-react";
 
-type Business = {
-  id: string;
-  name: string;
-  trade: string;
-  phone: string | null;
-  service_area: string | null;
-};
+type Business = { id: string; name: string; trade: string; phone: string | null; service_area: string | null };
+type Lead = { id: string; name: string; phone: string | null; issue: string | null; estimated_value: number | null; source: string | null; urgency: string };
+type Call = { id: string; from_number: string; recovered: boolean; note: string | null; created_at: string };
+type Booking = { id: string; customer_name: string; job: string | null; scheduled_at: string; value_cents: number };
+type Sub = { plan: string | null; status: string } | null;
 
 export const Route = createFileRoute("/_authenticated/app")({
   head: () => ({ meta: [{ title: "Dashboard — CallLedger AI" }, { name: "robots", content: "noindex" }] }),
   component: Dashboard,
 });
 
-const MOCK_LEADS = [
-  { id: 1, name: "Marcus Delaney", issue: "No hot water — needs today", value: 850, source: "Missed call · 6:42 PM", urgency: "high", phone: "(415) 555-0132" },
-  { id: 2, name: "Priya Ramanathan", issue: "AC blowing warm, upstairs unit", value: 1400, source: "SMS booking · 7:18 PM", urgency: "high", phone: "(415) 555-0198" },
-  { id: 3, name: "Dave Ostrowski", issue: "Panel upgrade quote follow-up", value: 3200, source: "Estimate reply", urgency: "med", phone: "(510) 555-0117" },
-  { id: 4, name: "Cheryl Wu", issue: "Toilet running, no rush", value: 220, source: "Web form", urgency: "low", phone: "(650) 555-0144" },
-];
-
-const MOCK_CALLS = [
-  { id: 1, from: "(415) 555-0132", time: "6:42 PM", recovered: true, note: "AI texted back in 12s. Booked for 8 AM." },
-  { id: 2, from: "(415) 555-0198", time: "7:18 PM", recovered: true, note: "Confirmed AC service — Tuesday 10 AM." },
-  { id: 3, from: "(650) 555-0201", time: "8:03 PM", recovered: false, note: "No response after 2 nudges. Marked cold." },
-  { id: 4, from: "(415) 555-0221", time: "9:14 PM", recovered: true, note: "Quote sent for water heater replacement." },
-];
-
-const MOCK_SCHEDULE = [
-  { time: "8:00 AM", customer: "M. Delaney", job: "Water heater diag", value: "$850" },
-  { time: "10:30 AM", customer: "T. Nguyen", job: "Furnace tune-up", value: "$189" },
-  { time: "1:00 PM", customer: "S. Alvarez", job: "Leak repair — kitchen", value: "$420" },
-  { time: "3:30 PM", customer: "P. Ramanathan", job: "AC service call", value: "$1,400" },
-];
-
 function Dashboard() {
   const [business, setBusiness] = useState<Business | null>(null);
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [calls, setCalls] = useState<Call[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [sub, setSub] = useState<Sub>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const seed = useServerFn(seedDashboardIfEmpty);
+  const checkout = useServerFn(createCheckoutSession);
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from("businesses").select("*").maybeSingle();
-      if (!data) {
-        navigate({ to: "/onboarding" });
-        return;
+      const { data: biz } = await supabase.from("businesses").select("*").maybeSingle();
+      if (!biz) { navigate({ to: "/onboarding" }); return; }
+      setBusiness(biz as Business);
+
+      await seed({ data: { businessId: biz.id } }).catch(() => {});
+
+      const [{ data: l }, { data: c }, { data: b }, { data: s }, { data: u }] = await Promise.all([
+        supabase.from("leads").select("*").eq("business_id", biz.id).order("created_at", { ascending: false }).limit(10),
+        supabase.from("calls").select("*").eq("business_id", biz.id).order("created_at", { ascending: false }).limit(10),
+        supabase.from("bookings").select("*").eq("business_id", biz.id).order("scheduled_at", { ascending: true }).limit(10),
+        supabase.from("subscriptions").select("plan,status").eq("business_id", biz.id).maybeSingle(),
+        supabase.auth.getUser(),
+      ]);
+      setLeads((l ?? []) as Lead[]);
+      setCalls((c ?? []) as Call[]);
+      setBookings((b ?? []) as Booking[]);
+      setSub(s as Sub);
+
+      if (u?.user) {
+        const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", u.user.id);
+        const admin = roles?.some((r) => r.role === "admin") || u.user.email === "hamdi.rabahksu@gmail.com";
+        setIsAdmin(!!admin);
       }
-      setBusiness(data as Business);
       setLoading(false);
     })();
-  }, [navigate]);
+  }, [navigate, seed]);
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    navigate({ to: "/" });
+  const signOut = async () => { await supabase.auth.signOut(); navigate({ to: "/" }); };
+
+  const startCheckout = async (plan: "pilot" | "starter" | "growth") => {
+    if (!business) return;
+    try {
+      const res = await checkout({ data: { plan, businessId: business.id } });
+      if (!res.configured) {
+        toast.error("Stripe not connected yet — ask an admin to add STRIPE_SECRET_KEY.");
+        return;
+      }
+      window.location.href = res.url;
+    } catch (e) {
+      toast.error("Couldn't start checkout");
+    }
   };
 
-  if (loading) {
-    return <div className="grid min-h-screen place-items-center text-muted-foreground">Loading dispatch...</div>;
-  }
+  if (loading) return <div className="grid min-h-screen place-items-center text-muted-foreground">Loading dispatch...</div>;
+
+  const isPaid = sub?.status === "active" || sub?.status === "trialing";
+  const recovered = leads.reduce((sum, l) => sum + (l.estimated_value ?? 0), 0);
+  const totalCalls = calls.length || 1;
+  const responseRate = Math.round((calls.filter((c) => c.recovered).length / totalCalls) * 100);
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top bar */}
       <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2">
@@ -80,6 +97,11 @@ function Dashboard() {
             <span className="ml-3 hidden text-xs text-muted-foreground sm:inline">/ {business?.name}</span>
           </Link>
           <div className="flex items-center gap-2">
+            {isAdmin && (
+              <Link to="/admin" className="hidden items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary sm:inline-flex">
+                <ShieldAlert className="h-3.5 w-3.5" /> Admin
+              </Link>
+            )}
             <Link to="/onboarding" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground">
               <Settings className="h-4 w-4" />
             </Link>
@@ -90,27 +112,41 @@ function Dashboard() {
         </div>
       </header>
 
+      {!isPaid && (
+        <div className="border-b border-primary/30 bg-primary/10">
+          <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2 text-sm">
+              <Lock className="h-4 w-4 text-primary" />
+              <span className="text-foreground"><span className="font-semibold">Preview mode.</span> Start the $49 pilot to unlock live SMS recovery.</span>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => startCheckout("pilot")} className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:brightness-110">Start pilot — $49</button>
+              <button onClick={() => startCheckout("starter")} className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-accent">Starter $99</button>
+              <button onClick={() => startCheckout("growth")} className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-accent">Growth $199</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="mx-auto max-w-7xl px-4 py-8">
-        {/* Greeting strip */}
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">Today · {new Date().toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}</p>
-            <h1 className="mt-2 font-display text-4xl">4 new leads. 3 booked overnight.</h1>
+            <h1 className="mt-2 font-display text-4xl">{leads.length} new leads. {calls.filter((c) => c.recovered).length} recovered overnight.</h1>
             <p className="mt-1 text-muted-foreground">Nice — you slept while CallLedger worked.</p>
           </div>
           <div className="flex gap-2">
-            <StatPill icon={DollarSign} label="Recovered value" value="$5,670" tone="amber" />
-            <StatPill icon={TrendingUp} label="Response rate" value="94%" />
+            <StatPill icon={DollarSign} label="Pipeline value" value={`$${recovered.toLocaleString()}`} tone="amber" />
+            <StatPill icon={TrendingUp} label="Response rate" value={`${responseRate}%`} />
           </div>
         </div>
 
-        {/* Grid */}
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
-          {/* Today's leads (spans 2) */}
           <section className="lg:col-span-2 rounded-lg border border-border bg-card">
             <SectionHeader icon={PhoneMissed} title="Today's leads" sub="Auto-captured overnight" />
             <ul className="divide-y divide-border">
-              {MOCK_LEADS.map((l) => (
+              {leads.length === 0 && <li className="p-6 text-center text-sm text-muted-foreground">No leads yet.</li>}
+              {leads.map((l) => (
                 <li key={l.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-start gap-3">
                     <span className={`mt-1.5 h-2 w-2 rounded-full ${
@@ -119,14 +155,14 @@ function Dashboard() {
                     <div>
                       <div className="flex items-center gap-2">
                         <p className="font-semibold text-foreground">{l.name}</p>
-                        <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{l.source}</span>
+                        {l.source && <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{l.source}</span>}
                       </div>
                       <p className="mt-0.5 text-sm text-muted-foreground">{l.issue}</p>
-                      <p className="mt-1 text-xs text-muted-foreground/80">{l.phone}</p>
+                      {l.phone && <p className="mt-1 text-xs text-muted-foreground/80">{l.phone}</p>}
                     </div>
                   </div>
                   <div className="flex items-center gap-3 sm:flex-col sm:items-end">
-                    <p className="font-display text-lg text-primary">${l.value.toLocaleString()}</p>
+                    <p className="font-display text-lg text-primary">${(l.estimated_value ?? 0).toLocaleString()}</p>
                     <div className="flex gap-1.5">
                       <ActionButton icon={Phone} onClick={() => toast.success(`Calling ${l.name}...`)}>Call</ActionButton>
                       <ActionButton icon={MessageSquare} onClick={() => toast.success("SMS thread opened")}>SMS</ActionButton>
@@ -137,44 +173,28 @@ function Dashboard() {
             </ul>
           </section>
 
-          {/* Quick actions */}
           <section className="rounded-lg border border-border bg-card">
             <SectionHeader icon={Send} title="Quick actions" />
             <div className="space-y-2 p-4">
-              <QuickAction
-                icon={Send}
-                title="Send estimate SMS"
-                body="Send a follow-up nudge on an open quote."
-                onClick={() => toast.success("Estimate SMS sent to 2 open quotes")}
-              />
-              <QuickAction
-                icon={Star}
-                title="Ask for a review"
-                body="Text a Google review link to closed jobs from last week."
-                onClick={() => toast.success("Review ask sent to 6 recent customers")}
-              />
-              <QuickAction
-                icon={MessageSquare}
-                title="Broadcast a message"
-                body="Notify booked customers of a schedule change."
-                onClick={() => toast.info("Broadcast composer — coming soon")}
-              />
+              <QuickAction icon={Send} title="Send estimate SMS" body="Follow up on open quotes." onClick={() => toast.success("Estimate SMS queued")} />
+              <QuickAction icon={Star} title="Ask for a review" body="Text a Google review link to recent jobs." onClick={() => toast.success("Review asks queued")} />
+              <QuickAction icon={MessageSquare} title="Broadcast a message" body="Notify booked customers of schedule changes." onClick={() => toast.info("Broadcast composer — coming soon")} />
             </div>
           </section>
 
-          {/* Missed calls log */}
           <section className="lg:col-span-2 rounded-lg border border-border bg-card">
             <SectionHeader icon={PhoneMissed} title="Missed calls · handled" sub="Last 12 hours" />
             <ul className="divide-y divide-border">
-              {MOCK_CALLS.map((c) => (
+              {calls.length === 0 && <li className="p-6 text-center text-sm text-muted-foreground">No calls yet.</li>}
+              {calls.map((c) => (
                 <li key={c.id} className="flex items-center gap-4 p-4">
                   <div className={`grid h-9 w-9 place-items-center rounded-md ${c.recovered ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
                     <Phone className="h-4 w-4" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="font-mono text-sm">{c.from}</p>
-                      <span className="text-xs text-muted-foreground"><Clock className="mr-1 inline h-3 w-3" />{c.time}</span>
+                      <p className="font-mono text-sm">{c.from_number}</p>
+                      <span className="text-xs text-muted-foreground"><Clock className="mr-1 inline h-3 w-3" />{new Date(c.created_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
                     </div>
                     <p className="truncate text-sm text-muted-foreground">{c.note}</p>
                   </div>
@@ -188,17 +208,17 @@ function Dashboard() {
             </ul>
           </section>
 
-          {/* Today's schedule */}
           <section className="rounded-lg border border-border bg-card">
             <SectionHeader icon={Calendar} title="Today's schedule" sub={business?.service_area || "Your route"} />
             <ul className="divide-y divide-border">
-              {MOCK_SCHEDULE.map((s, i) => (
-                <li key={i} className="p-4">
+              {bookings.length === 0 && <li className="p-6 text-center text-sm text-muted-foreground">Nothing booked.</li>}
+              {bookings.map((s) => (
+                <li key={s.id} className="p-4">
                   <div className="flex items-baseline justify-between">
-                    <span className="font-mono text-sm text-primary">{s.time}</span>
-                    <span className="text-sm text-muted-foreground">{s.value}</span>
+                    <span className="font-mono text-sm text-primary">{new Date(s.scheduled_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
+                    <span className="text-sm text-muted-foreground">${(s.value_cents / 100).toLocaleString()}</span>
                   </div>
-                  <p className="mt-1 font-semibold">{s.customer}</p>
+                  <p className="mt-1 font-semibold">{s.customer_name}</p>
                   <p className="text-sm text-muted-foreground">{s.job}</p>
                 </li>
               ))}

@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          business_id: string
+          created_at: string
+          customer_name: string
+          id: string
+          job: string | null
+          lead_id: string | null
+          scheduled_at: string
+          status: string
+          updated_at: string
+          value_cents: number
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          customer_name: string
+          id?: string
+          job?: string | null
+          lead_id?: string | null
+          scheduled_at: string
+          status?: string
+          updated_at?: string
+          value_cents?: number
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          customer_name?: string
+          id?: string
+          job?: string | null
+          lead_id?: string | null
+          scheduled_at?: string
+          status?: string
+          updated_at?: string
+          value_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       businesses: {
         Row: {
           after_hours_message: string | null
@@ -50,6 +104,177 @@ export type Database = {
         }
         Relationships: []
       }
+      calls: {
+        Row: {
+          business_id: string
+          created_at: string
+          from_number: string
+          id: string
+          note: string | null
+          recovered: boolean
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          from_number: string
+          id?: string
+          note?: string | null
+          recovered?: boolean
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          from_number?: string
+          id?: string
+          note?: string | null
+          recovered?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calls_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          business_id: string
+          created_at: string
+          estimated_value: number | null
+          id: string
+          issue: string | null
+          name: string
+          phone: string | null
+          source: string | null
+          status: string
+          updated_at: string
+          urgency: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          estimated_value?: number | null
+          id?: string
+          issue?: string | null
+          name: string
+          phone?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+          urgency?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          estimated_value?: number | null
+          id?: string
+          issue?: string | null
+          name?: string
+          phone?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+          urgency?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          business_id: string
+          created_at: string
+          current_period_end: string | null
+          id: string
+          plan: string | null
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: true
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       waitlist: {
         Row: {
           created_at: string
@@ -76,10 +301,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "owner" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -206,6 +438,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["owner", "admin"],
+    },
   },
 } as const
