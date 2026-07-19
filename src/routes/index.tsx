@@ -1,8 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { PhoneMissed, MessageSquare, CalendarCheck, Star, Check, ArrowRight, Zap } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { createCheckoutSession, getStripeStatus, type Plan } from "@/lib/checkout.functions";
+import { PhoneMissed, MessageSquare, CalendarCheck, Star, Check, ArrowRight, Zap, AlertTriangle } from "lucide-react";
 import heroImg from "@/assets/hero.jpg";
 
 export const Route = createFileRoute("/")({
