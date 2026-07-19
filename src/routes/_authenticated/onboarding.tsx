@@ -1,0 +1,125 @@
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Zap, Wrench, Flame, Bolt, ArrowRight } from "lucide-react";
+
+export const Route = createFileRoute("/_authenticated/onboarding")({
+  head: () => ({ meta: [{ title: "Set up your shop — CallLedger AI" }, { name: "robots", content: "noindex" }] }),
+  component: Onboarding,
+});
+
+const TRADES = [
+  { id: "HVAC", label: "HVAC", icon: Flame },
+  { id: "Plumbing", label: "Plumbing", icon: Wrench },
+  { id: "Electrical", label: "Electrical", icon: Bolt },
+] as const;
+
+function Onboarding() {
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [trade, setTrade] = useState<string>("HVAC");
+  const [phone, setPhone] = useState("");
+  const [area, setArea] = useState("");
+  const [msg, setMsg] = useState("Hi, this is [Shop] — sorry we missed you. Text us what you need and we'll be right back to you.");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from("businesses").select("*").maybeSingle();
+      if (data) {
+        setName(data.name); setTrade(data.trade);
+        setPhone(data.phone || ""); setArea(data.service_area || "");
+        setMsg(data.after_hours_message || msg);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) { setBusy(false); return; }
+    const { error } = await supabase.from("businesses").upsert(
+      { owner_id: u.user.id, name, trade, phone, service_area: area, after_hours_message: msg },
+      { onConflict: "owner_id" }
+    );
+    setBusy(false);
+    if (error) return toast.error(error.message);
+    toast.success("Shop configured — welcome aboard.");
+    navigate({ to: "/app" });
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border">
+        <div className="mx-auto flex h-14 max-w-3xl items-center px-4">
+          <div className="flex items-center gap-2">
+            <div className="grid h-7 w-7 place-items-center rounded-sm bg-primary text-primary-foreground">
+              <Zap className="h-4 w-4" strokeWidth={2.5} />
+            </div>
+            <span className="font-display text-lg">CALL<span className="text-primary">LEDGER</span></span>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-2xl px-4 py-12">
+        <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">Setup · takes 90 seconds</p>
+        <h1 className="mt-3 font-display text-4xl">Tell us about the shop.</h1>
+        <p className="mt-2 text-muted-foreground">We use this to answer callers in your voice.</p>
+
+        <form onSubmit={save} className="mt-10 space-y-6">
+          <Field label="Business name">
+            <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Delaney Plumbing & Heating"
+              className="h-11 w-full rounded-md border border-border bg-card px-3.5 focus:border-primary focus:outline-none" />
+          </Field>
+
+          <Field label="Trade">
+            <div className="grid grid-cols-3 gap-2">
+              {TRADES.map((t) => (
+                <button key={t.id} type="button" onClick={() => setTrade(t.id)}
+                  className={`flex items-center gap-2 rounded-md border p-3 text-sm font-medium transition ${
+                    trade === t.id ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-muted-foreground hover:text-foreground"
+                  }`}>
+                  <t.icon className="h-4 w-4" /> {t.label}
+                </button>
+              ))}
+            </div>
+          </Field>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Business phone">
+              <input required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(555) 123-4567" type="tel"
+                className="h-11 w-full rounded-md border border-border bg-card px-3.5 focus:border-primary focus:outline-none" />
+            </Field>
+            <Field label="Service area">
+              <input required value={area} onChange={(e) => setArea(e.target.value)} placeholder="East Bay, CA · 25 mi"
+                className="h-11 w-full rounded-md border border-border bg-card px-3.5 focus:border-primary focus:outline-none" />
+            </Field>
+          </div>
+
+          <Field label="After-hours SMS auto-reply" hint="What callers hear when you can't pick up.">
+            <textarea value={msg} onChange={(e) => setMsg(e.target.value)} rows={4}
+              className="w-full rounded-md border border-border bg-card px-3.5 py-3 focus:border-primary focus:outline-none" />
+          </Field>
+
+          <button type="submit" disabled={busy}
+            className="inline-flex h-12 items-center gap-2 rounded-md bg-primary px-6 font-semibold text-primary-foreground transition hover:brightness-110 disabled:opacity-50">
+            {busy ? "Saving..." : "Save & go to dashboard"} <ArrowRight className="h-4 w-4" />
+          </button>
+        </form>
+      </main>
+    </div>
+  );
+}
+
+function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 block font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">{label}</span>
+      {children}
+      {hint && <span className="mt-1 block text-xs text-muted-foreground/70">{hint}</span>}
+    </label>
+  );
+}
