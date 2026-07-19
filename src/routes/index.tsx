@@ -177,54 +177,74 @@ function Solution() {
 }
 
 function Pricing() {
-  const tiers = [
+  const tiers: { name: string; plan: Plan; price: number; note: string; features: string[]; cta: string; highlight?: boolean }[] = [
     {
-      name: "Pilot",
-      price: 49,
+      name: "Pilot", plan: "pilot", price: 49,
       note: "First 30 days. No contract.",
       features: ["Missed-call SMS recovery", "Up to 50 handled calls", "Basic booking calendar", "Email support"],
       cta: "Start pilot",
     },
     {
-      name: "Starter",
-      price: 99,
+      name: "Starter", plan: "starter", price: 99,
       note: "Solo operator. Nights & weekends covered.",
       features: ["Everything in Pilot", "Unlimited missed-call recovery", "AI SMS booking", "Estimate follow-up sequence", "Review-request automation"],
-      cta: "Choose Starter",
-      highlight: true,
+      cta: "Choose Starter", highlight: true,
     },
     {
-      name: "Growth",
-      price: 199,
+      name: "Growth", plan: "growth", price: 199,
       note: "2–10 techs. Full front-office.",
       features: ["Everything in Starter", "24/7 AI voice answering", "Dispatch calendar for team", "Custom greeting & scripts", "Priority support"],
       cta: "Choose Growth",
     },
   ];
+
+  const navigate = useNavigate();
+  const checkout = useServerFn(createCheckoutSession);
+  const stripeStatus = useServerFn(getStripeStatus);
+  const [stripeReady, setStripeReady] = useState<boolean | null>(null);
+  const [busy, setBusy] = useState<Plan | null>(null);
+
+  useEffect(() => { stripeStatus({}).then((r) => setStripeReady(r.configured)).catch(() => setStripeReady(false)); }, [stripeStatus]);
+
+  const choose = async (plan: Plan) => {
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
+      navigate({ to: "/auth", search: { mode: "signup", plan } as any });
+      return;
+    }
+    const { data: biz } = await supabase.from("businesses").select("id").maybeSingle();
+    if (!biz) { navigate({ to: "/onboarding", search: { plan } as any }); return; }
+    setBusy(plan);
+    try {
+      const res = await checkout({ data: { plan, businessId: biz.id } });
+      if (!res.configured) { toast.error("Stripe not connected yet."); return; }
+      window.location.href = res.url;
+    } catch { toast.error("Couldn't start checkout"); }
+    finally { setBusy(null); }
+  };
+
   return (
     <section id="pricing" className="border-t border-border bg-card/30 py-24">
       <div className="mx-auto max-w-6xl px-4">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">Pricing</p>
-        <h2 className="mt-3 font-display text-4xl md:text-5xl text-balance">
-          One booked job pays for a year.
-        </h2>
-        <p className="mt-4 max-w-xl text-muted-foreground">
-          Flat monthly. No per-call fees. Cancel anytime — we're not going to trap you.
-        </p>
+        <h2 className="mt-3 font-display text-4xl md:text-5xl text-balance">One booked job pays for a year.</h2>
+        <p className="mt-4 max-w-xl text-muted-foreground">Flat monthly. No per-call fees. Cancel anytime — we're not going to trap you.</p>
+
+        {stripeReady === false && (
+          <div className="mt-6 flex items-start gap-3 rounded-md border border-yellow-500/40 bg-yellow-500/10 p-3 text-sm text-yellow-100">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-yellow-400" />
+            <div>
+              <p className="font-semibold">Payments not live yet</p>
+              <p className="text-yellow-100/80">Add <code className="font-mono text-xs">STRIPE_SECRET_KEY</code> in Project Settings → Secrets to accept live payments. Signups still work — pilots can onboard now.</p>
+            </div>
+          </div>
+        )}
+
         <div className="mt-12 grid gap-4 md:grid-cols-3">
           {tiers.map((t) => (
-            <div
-              key={t.name}
-              className={`relative rounded-lg border p-6 transition ${
-                t.highlight
-                  ? "border-primary bg-card shadow-[0_0_0_1px_var(--color-primary)]"
-                  : "border-border bg-card"
-              }`}
-            >
+            <div key={t.name} className={`relative rounded-lg border p-6 transition ${t.highlight ? "border-primary bg-card shadow-[0_0_0_1px_var(--color-primary)]" : "border-border bg-card"}`}>
               {t.highlight && (
-                <span className="absolute -top-2.5 left-6 rounded-sm bg-primary px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.2em] text-primary-foreground">
-                  Most shops
-                </span>
+                <span className="absolute -top-2.5 left-6 rounded-sm bg-primary px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.2em] text-primary-foreground">Most shops</span>
               )}
               <h3 className="font-display text-2xl">{t.name}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{t.note}</p>
@@ -240,17 +260,15 @@ function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Link
-                to="/auth"
-                search={{ mode: "signup" }}
-                className={`mt-7 flex w-full items-center justify-center rounded-md px-4 py-2.5 text-sm font-semibold transition ${
-                  t.highlight
-                    ? "bg-primary text-primary-foreground hover:brightness-110"
-                    : "border border-border text-foreground hover:bg-accent"
+              <button
+                onClick={() => choose(t.plan)}
+                disabled={busy === t.plan}
+                className={`mt-7 flex w-full items-center justify-center rounded-md px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50 ${
+                  t.highlight ? "bg-primary text-primary-foreground hover:brightness-110" : "border border-border text-foreground hover:bg-accent"
                 }`}
               >
-                {t.cta}
-              </Link>
+                {busy === t.plan ? "Loading…" : t.cta}
+              </button>
             </div>
           ))}
         </div>
