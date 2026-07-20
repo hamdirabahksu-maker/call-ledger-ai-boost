@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -17,6 +18,10 @@ type Booking = { id: string; customer_name: string; job: string | null; schedule
 type Sub = { plan: string | null; status: string } | null;
 
 export const Route = createFileRoute("/_authenticated/app")({
+  validateSearch: z.object({
+    plan: z.enum(["pilot", "starter", "growth"]).optional(),
+    checkout: z.enum(["success"]).optional(),
+  }),
   head: () => ({ meta: [{ title: "Dashboard — CallLedger AI" }, { name: "robots", content: "noindex" }] }),
   component: Dashboard,
 });
@@ -30,8 +35,10 @@ function Dashboard() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { plan: resumePlan, checkout: checkoutStatus } = Route.useSearch();
   const seed = useServerFn(seedDashboardIfEmpty);
   const checkout = useServerFn(createCheckoutSession);
+  const resumeRef = useRef(false);
 
   useEffect(() => {
     (async () => {
@@ -77,6 +84,22 @@ function Dashboard() {
       toast.error("Couldn't start checkout");
     }
   };
+
+  useEffect(() => {
+    if (checkoutStatus === "success") toast.success("Payment received — you're live.");
+  }, [checkoutStatus]);
+
+  useEffect(() => {
+    if (!business || !resumePlan || resumeRef.current) return;
+    resumeRef.current = true;
+    (async () => {
+      try {
+        const res = await checkout({ data: { plan: resumePlan, businessId: business.id } });
+        if (res.configured) window.location.href = res.url;
+        else toast.error("Stripe not connected yet — ask an admin to add STRIPE_SECRET_KEY.");
+      } catch { toast.error("Couldn't start checkout"); }
+    })();
+  }, [business, resumePlan, checkout]);
 
   if (loading) return <div className="grid min-h-screen place-items-center text-muted-foreground">Loading dispatch...</div>;
 

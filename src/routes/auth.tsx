@@ -7,6 +7,7 @@ import { Zap, ArrowLeft } from "lucide-react";
 
 const searchSchema = z.object({
   mode: z.enum(["signup", "login"]).catch("login"),
+  plan: z.enum(["pilot", "starter", "growth"]).optional(),
 });
 
 export const Route = createFileRoute("/auth")({
@@ -21,7 +22,8 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
-  const { mode: initialMode } = Route.useSearch();
+  const { mode: initialMode, plan } = Route.useSearch();
+  const nextTo = plan ? { to: "/app" as const, search: { plan } } : { to: "/app" as const };
   const [mode, setMode] = useState<"signup" | "login">(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,9 +32,10 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/app" });
+      if (data.session) navigate(nextTo as any);
     });
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,13 +52,13 @@ function AuthPage() {
         toast.success("Account created");
         // check if session (auto-confirm on) or needs email
         const { data } = await supabase.auth.getSession();
-        if (data.session) navigate({ to: "/onboarding" });
+        if (data.session) navigate(plan ? { to: "/onboarding", search: { plan } } as any : { to: "/onboarding" });
         else toast.info("Check your email to confirm.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Welcome back");
-        navigate({ to: "/app" });
+        navigate(nextTo as any);
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Something went wrong";

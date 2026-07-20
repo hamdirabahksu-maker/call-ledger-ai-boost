@@ -95,7 +95,7 @@ function Hero() {
         <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
           <Link
             to="/auth"
-            search={{ mode: "signup" }}
+            search={{ mode: "signup", plan: "pilot" } as any}
             className="group inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3.5 text-base font-semibold text-primary-foreground transition hover:brightness-110"
           >
             Start 30-day pilot — $49
