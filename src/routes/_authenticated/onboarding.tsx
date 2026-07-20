@@ -1,10 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { createCheckoutSession } from "@/lib/checkout.functions";
 import { Zap, Wrench, Flame, Bolt, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
+  validateSearch: z.object({ plan: z.enum(["pilot", "starter", "growth"]).optional() }),
   head: () => ({ meta: [{ title: "Set up your shop — CallLedger AI" }, { name: "robots", content: "noindex" }] }),
   component: Onboarding,
 });
@@ -17,6 +21,8 @@ const TRADES = [
 
 function Onboarding() {
   const navigate = useNavigate();
+  const { plan } = Route.useSearch();
+  const checkout = useServerFn(createCheckoutSession);
   const [name, setName] = useState("");
   const [trade, setTrade] = useState<string>("HVAC");
   const [phone, setPhone] = useState("");
@@ -41,13 +47,21 @@ function Onboarding() {
     setBusy(true);
     const { data: u } = await supabase.auth.getUser();
     if (!u.user) { setBusy(false); return; }
-    const { error } = await supabase.from("businesses").upsert(
+    const { data: biz, error } = await supabase.from("businesses").upsert(
       { owner_id: u.user.id, name, trade, phone, service_area: area, after_hours_message: msg },
       { onConflict: "owner_id" }
-    );
-    setBusy(false);
-    if (error) return toast.error(error.message);
+    ).select("id").maybeSingle();
+    if (error) { setBusy(false); return toast.error(error.message); }
     toast.success("Shop configured — welcome aboard.");
+
+    if (plan && biz?.id) {
+      try {
+        const res = await checkout({ data: { plan, businessId: biz.id } });
+        if (res.configured) { window.location.href = res.url; return; }
+        toast.error("Stripe not connected yet — going to dashboard.");
+      } catch { toast.error("Couldn't start checkout"); }
+    }
+    setBusy(false);
     navigate({ to: "/app" });
   };
 
