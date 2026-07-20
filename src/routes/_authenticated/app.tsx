@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -17,6 +18,10 @@ type Booking = { id: string; customer_name: string; job: string | null; schedule
 type Sub = { plan: string | null; status: string } | null;
 
 export const Route = createFileRoute("/_authenticated/app")({
+  validateSearch: z.object({
+    plan: z.enum(["pilot", "starter", "growth"]).optional(),
+    checkout: z.enum(["success"]).optional(),
+  }),
   head: () => ({ meta: [{ title: "Dashboard — CallLedger AI" }, { name: "robots", content: "noindex" }] }),
   component: Dashboard,
 });
