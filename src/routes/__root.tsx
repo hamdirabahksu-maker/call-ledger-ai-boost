@@ -84,10 +84,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "AI front-office for solo trades. Missed-call recovery, SMS booking, estimate follow-up, review asks.",
+          "AI front-office for solo HVAC, plumbing, and electrical shops. Answer missed calls, book jobs by SMS, and follow up on estimates — from $49/mo.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "CallLedger AI — Never miss a service call again" },
+      { name: "twitter:description", content: "AI front-office for solo HVAC, plumbing, and electrical shops. Answer missed calls, book jobs by SMS, and follow up on estimates — from $49/mo." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fb9962b5-02ca-40a4-b311-4b782b280f21/id-preview-43ea329b--7dfb742a-c971-49ff-8acd-2eca08b85c86.lovable.app-1784549685161.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fb9962b5-02ca-40a4-b311-4b782b280f21/id-preview-43ea329b--7dfb742a-c971-49ff-8acd-2eca08b85c86.lovable.app-1784549685161.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
