@@ -3,13 +3,15 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { loadAdminData } from "@/lib/admin.functions";
-import { Zap, ShieldAlert, Users, Building2, CreditCard, ArrowLeft } from "lucide-react";
+import { Zap, ShieldAlert, Users, Building2, CreditCard, ArrowLeft, Sparkles, Download, Mail } from "lucide-react";
 
 type Row = Record<string, any>;
 type AdminData = {
   waitlist: Row[]; businesses: Row[]; subscriptions: Row[]; leads: Row[];
-  stats: { waitlist: number; businesses: number; paying: number };
+  stats: { waitlist: number; businesses: number; paying: number; drafts: number };
+  integrations: { resend: boolean };
 };
+
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Admin — CallLedger" }, { name: "robots", content: "noindex" }] }),
