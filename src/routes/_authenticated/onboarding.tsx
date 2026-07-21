@@ -5,19 +5,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { createCheckoutSession } from "@/lib/checkout.functions";
-import { Zap, Wrench, Flame, Bolt, ArrowRight } from "lucide-react";
+import { INDUSTRIES, COUNTRIES } from "@/lib/industries";
+import { Zap, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   validateSearch: z.object({ plan: z.enum(["pilot", "starter", "growth"]).optional() }),
-  head: () => ({ meta: [{ title: "Set up your shop — CallLedger AI" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Set up your business — CallLedger AI" }, { name: "robots", content: "noindex" }] }),
   component: Onboarding,
 });
 
-const TRADES = [
-  { id: "HVAC", label: "HVAC", icon: Flame },
-  { id: "Plumbing", label: "Plumbing", icon: Wrench },
-  { id: "Electrical", label: "Electrical", icon: Bolt },
-] as const;
 
 function Onboarding() {
   const navigate = useNavigate();
