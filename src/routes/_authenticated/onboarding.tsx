@@ -48,11 +48,12 @@ function Onboarding() {
     const { data: u } = await supabase.auth.getUser();
     if (!u.user) { setBusy(false); return; }
     const { data: biz, error } = await supabase.from("businesses").upsert(
-      { owner_id: u.user.id, name, trade, phone, service_area: area, after_hours_message: msg },
+      { owner_id: u.user.id, name, trade, phone, service_area: area, after_hours_message: msg, country } as any,
       { onConflict: "owner_id" }
     ).select("id").maybeSingle();
     if (error) { setBusy(false); return toast.error(error.message); }
-    toast.success("Shop configured — welcome aboard.");
+    toast.success("You're all set — welcome aboard.");
+
 
     if (plan && biz?.id) {
       try {
