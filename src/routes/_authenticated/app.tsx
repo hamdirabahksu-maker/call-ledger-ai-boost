@@ -44,6 +44,7 @@ function Dashboard() {
   const seed = useServerFn(seedDashboardIfEmpty);
   const checkout = useServerFn(createCheckoutSession);
   const twilioStatus = useServerFn(getTwilioStatus);
+  const updateBookingStatusFn = useServerFn(updateBookingStatus);
   const sendSmsFn = useServerFn(sendSms);
   const resumeRef = useRef(false);
 
