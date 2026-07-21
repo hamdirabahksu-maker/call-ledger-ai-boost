@@ -213,7 +213,7 @@ function Dashboard() {
                     <p className="font-display text-lg text-primary">${(l.estimated_value ?? 0).toLocaleString()}</p>
                     <div className="flex gap-1.5">
                       <ActionButton icon={Phone} onClick={() => toast.success(`Calling ${l.name}...`)}>Call</ActionButton>
-                      <ActionButton icon={MessageSquare} onClick={() => toast.success("SMS thread opened")}>SMS</ActionButton>
+                      <ActionButton icon={MessageSquare} onClick={() => smsLead(l)}>SMS</ActionButton>
                     </div>
                   </div>
                 </li>
