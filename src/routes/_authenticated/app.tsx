@@ -377,3 +377,11 @@ function QuickAction({ icon: Icon, title, body, onClick }: { icon: React.Compone
     </button>
   );
 }
+
+function BookingAction({ icon: Icon, children, onClick }: { icon: React.ComponentType<{ className?: string }>; children: React.ReactNode; onClick: () => void }) {
+  return (
+    <button onClick={onClick} className="inline-flex items-center gap-1 rounded-md border border-border bg-background/50 px-2 py-1 text-[11px] font-medium text-foreground hover:border-primary hover:bg-primary/10 hover:text-primary">
+      <Icon className="h-3 w-3" /> {children}
+    </button>
+  );
+}
