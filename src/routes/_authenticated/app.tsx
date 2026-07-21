@@ -36,10 +36,13 @@ function Dashboard() {
   const [sub, setSub] = useState<Sub>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [twilioConfigured, setTwilioConfigured] = useState<boolean | null>(null);
   const navigate = useNavigate();
   const { plan: resumePlan, checkout: checkoutStatus } = Route.useSearch();
   const seed = useServerFn(seedDashboardIfEmpty);
   const checkout = useServerFn(createCheckoutSession);
+  const twilioStatus = useServerFn(getTwilioStatus);
+  const sendSmsFn = useServerFn(sendSms);
   const resumeRef = useRef(false);
 
   useEffect(() => {
