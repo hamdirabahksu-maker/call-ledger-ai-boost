@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 
-type Business = { id: string; name: string; trade: string; phone: string | null; service_area: string | null };
+type Business = { id: string; name: string; trade: string; phone: string | null; service_area: string | null; booking_slug: string | null; booking_enabled: boolean };
 type Lead = { id: string; name: string; phone: string | null; issue: string | null; estimated_value: number | null; source: string | null; urgency: string };
 type Call = { id: string; from_number: string; recovered: boolean; note: string | null; created_at: string };
 type Booking = { id: string; customer_name: string; job: string | null; starts_at: string; value_cents: number; status: string; phone: string | null; source: string };
