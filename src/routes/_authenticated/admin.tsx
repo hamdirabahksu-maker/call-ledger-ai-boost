@@ -147,17 +147,37 @@ function Stat({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ 
   );
 }
 
-function Section({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
+function Section({ title, sub, action, children }: { title: string; sub?: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
     <section className="mt-10 rounded-lg border border-border bg-card">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <h2 className="font-display text-sm uppercase tracking-widest">{title}</h2>
-        {sub && <span className="text-xs text-muted-foreground">{sub}</span>}
+        <div className="flex items-center gap-3">
+          {sub && <span className="text-xs text-muted-foreground">{sub}</span>}
+          {action}
+        </div>
       </div>
       <div className="overflow-x-auto">{children}</div>
     </section>
   );
 }
+
+function exportCsv(rows: Row[], cols: string[], filename: string) {
+  const escape = (v: any) => {
+    if (v == null) return "";
+    const s = typeof v === "string" ? v : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const csv = [cols.join(","), ...rows.map((r) => cols.map((c) => escape(r[c])).join(","))].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 
 function Table({ cols, rows, format }: { cols: string[]; rows: Row[]; format?: Record<string, (v: any) => string> }) {
   if (rows.length === 0) return <p className="p-6 text-center text-sm text-muted-foreground">No rows.</p>;
