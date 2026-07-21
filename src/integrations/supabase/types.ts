@@ -71,6 +71,7 @@ export type Database = {
       businesses: {
         Row: {
           after_hours_message: string | null
+          country: string | null
           created_at: string
           id: string
           name: string
@@ -82,6 +83,7 @@ export type Database = {
         }
         Insert: {
           after_hours_message?: string | null
+          country?: string | null
           created_at?: string
           id?: string
           name: string
@@ -93,6 +95,7 @@ export type Database = {
         }
         Update: {
           after_hours_message?: string | null
+          country?: string | null
           created_at?: string
           id?: string
           name?: string
@@ -189,6 +192,47 @@ export type Database = {
           },
         ]
       }
+      marketing_drafts: {
+        Row: {
+          business_id: string
+          channel: string | null
+          content: string
+          created_at: string
+          id: string
+          kind: string
+          owner_id: string
+          prompt: string | null
+        }
+        Insert: {
+          business_id: string
+          channel?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          kind: string
+          owner_id: string
+          prompt?: string | null
+        }
+        Update: {
+          business_id?: string
+          channel?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          owner_id?: string
+          prompt?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_drafts_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -277,18 +321,21 @@ export type Database = {
       }
       waitlist: {
         Row: {
+          country: string | null
           created_at: string
           email: string
           id: string
           trade: string | null
         }
         Insert: {
+          country?: string | null
           created_at?: string
           email: string
           id?: string
           trade?: string | null
         }
         Update: {
+          country?: string | null
           created_at?: string
           email?: string
           id?: string
