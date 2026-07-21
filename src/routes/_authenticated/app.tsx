@@ -176,6 +176,20 @@ function Dashboard() {
         </div>
       )}
 
+      {twilioConfigured === false && (
+        <div className="border-b border-yellow-500/30 bg-yellow-500/10">
+          <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2.5 text-sm">
+            <ShieldAlert className="h-4 w-4 text-yellow-500" />
+            <span className="text-foreground">
+              <span className="font-semibold">Connect Twilio</span> to send real SMS — add{" "}
+              <code className="rounded bg-background/60 px-1 font-mono text-xs">TWILIO_ACCOUNT_SID</code>,{" "}
+              <code className="rounded bg-background/60 px-1 font-mono text-xs">TWILIO_AUTH_TOKEN</code>, and{" "}
+              <code className="rounded bg-background/60 px-1 font-mono text-xs">TWILIO_PHONE_NUMBER</code> in Project Settings → Secrets.
+            </span>
+          </div>
+        </div>
+      )}
+
       <main className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
