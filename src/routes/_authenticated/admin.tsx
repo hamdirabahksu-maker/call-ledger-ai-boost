@@ -3,13 +3,15 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { loadAdminData } from "@/lib/admin.functions";
-import { Zap, ShieldAlert, Users, Building2, CreditCard, ArrowLeft } from "lucide-react";
+import { Zap, ShieldAlert, Users, Building2, CreditCard, ArrowLeft, Sparkles, Download, Mail } from "lucide-react";
 
 type Row = Record<string, any>;
 type AdminData = {
   waitlist: Row[]; businesses: Row[]; subscriptions: Row[]; leads: Row[];
-  stats: { waitlist: number; businesses: number; paying: number };
+  stats: { waitlist: number; businesses: number; paying: number; drafts: number };
+  integrations: { resend: boolean };
 };
+
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Admin — CallLedger" }, { name: "robots", content: "noindex" }] }),
@@ -58,23 +60,46 @@ function Admin() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-8">
+      <main className="mx-auto max-w-7xl px-4 py-8 animate-fade-in">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">Operations</p>
         <h1 className="mt-2 font-display text-4xl">Control room</h1>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-3">
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Stat icon={Users} label="Waitlist" value={data.stats.waitlist} />
           <Stat icon={Building2} label="Shops onboarded" value={data.stats.businesses} />
           <Stat icon={CreditCard} label="Paying customers" value={data.stats.paying} tone="amber" />
+          <Stat icon={Sparkles} label="Marketing drafts" value={data.stats.drafts} />
         </div>
 
-        <Section title="Waitlist" sub={`${data.waitlist.length} entries`}>
+        {!data.integrations.resend && (
+          <div className="mt-6 flex items-start gap-3 rounded-md border border-yellow-500/40 bg-yellow-500/10 p-3 text-sm">
+            <Mail className="mt-0.5 h-4 w-4 shrink-0 text-yellow-400" />
+            <div className="flex-1">
+              <p className="font-semibold text-foreground">Connect Resend to send waitlist confirmations</p>
+              <p className="text-yellow-100/80">Add <code className="font-mono text-xs">RESEND_API_KEY</code> in Project Settings → Secrets. Waitlist signups will start emailing automatically.</p>
+            </div>
+          </div>
+        )}
+
+        <Section
+          title="Waitlist"
+          sub={`${data.waitlist.length} entries`}
+          action={
+            <button
+              onClick={() => exportCsv(data.waitlist, ["email", "trade", "country", "created_at"], "waitlist.csv")}
+              className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground hover:border-primary hover:text-primary"
+            >
+              <Download className="h-3 w-3" /> Export CSV
+            </button>
+          }
+        >
           <Table
-            cols={["email", "trade", "created_at"]}
+            cols={["email", "trade", "country", "created_at"]}
             rows={data.waitlist}
             format={{ created_at: (v) => new Date(v).toLocaleString() }}
           />
         </Section>
+
 
         <Section title="Businesses" sub={`${data.businesses.length} shops`}>
           <Table
@@ -122,17 +147,37 @@ function Stat({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ 
   );
 }
 
-function Section({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
+function Section({ title, sub, action, children }: { title: string; sub?: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
     <section className="mt-10 rounded-lg border border-border bg-card">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <h2 className="font-display text-sm uppercase tracking-widest">{title}</h2>
-        {sub && <span className="text-xs text-muted-foreground">{sub}</span>}
+        <div className="flex items-center gap-3">
+          {sub && <span className="text-xs text-muted-foreground">{sub}</span>}
+          {action}
+        </div>
       </div>
       <div className="overflow-x-auto">{children}</div>
     </section>
   );
 }
+
+function exportCsv(rows: Row[], cols: string[], filename: string) {
+  const escape = (v: any) => {
+    if (v == null) return "";
+    const s = typeof v === "string" ? v : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const csv = [cols.join(","), ...rows.map((r) => cols.map((c) => escape(r[c])).join(","))].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 
 function Table({ cols, rows, format }: { cols: string[]; rows: Row[]; format?: Record<string, (v: any) => string> }) {
   if (rows.length === 0) return <p className="p-6 text-center text-sm text-muted-foreground">No rows.</p>;
