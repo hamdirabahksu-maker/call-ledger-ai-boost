@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { seedDashboardIfEmpty } from "@/lib/dashboard.functions";
 import { createCheckoutSession } from "@/lib/checkout.functions";
+import { getTwilioStatus, sendSms } from "@/lib/sms.functions";
 import {
   Zap, PhoneMissed, Phone, MessageSquare, Star, Calendar, DollarSign,
   Clock, MapPin, Send, LogOut, Settings, TrendingUp, Lock, ShieldAlert, Sparkles,
@@ -35,10 +36,13 @@ function Dashboard() {
   const [sub, setSub] = useState<Sub>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [twilioConfigured, setTwilioConfigured] = useState<boolean | null>(null);
   const navigate = useNavigate();
   const { plan: resumePlan, checkout: checkoutStatus } = Route.useSearch();
   const seed = useServerFn(seedDashboardIfEmpty);
   const checkout = useServerFn(createCheckoutSession);
+  const twilioStatus = useServerFn(getTwilioStatus);
+  const sendSmsFn = useServerFn(sendSms);
   const resumeRef = useRef(false);
 
   useEffect(() => {
@@ -67,8 +71,24 @@ function Dashboard() {
         setIsAdmin(!!admin);
       }
       setLoading(false);
+      twilioStatus().then((s) => setTwilioConfigured(s.twilioConfigured)).catch(() => setTwilioConfigured(false));
     })();
-  }, [navigate, seed]);
+  }, [navigate, seed, twilioStatus]);
+
+  const smsLead = async (lead: Lead) => {
+    if (!lead.phone) { toast.error("No phone on this lead"); return; }
+    if (twilioConfigured === false) {
+      toast.error("Connect Twilio to send SMS — add secrets in Project Settings.");
+      return;
+    }
+    const message = `Hi ${lead.name.split(" ")[0]}, this is ${business?.name ?? "our team"} — we can help with "${lead.issue ?? "your request"}". Reply YES to book.`;
+    try {
+      const res = await sendSmsFn({ data: { to: lead.phone, body: message, leadId: lead.id } });
+      if (!res.configured) { toast.error("Twilio not configured"); setTwilioConfigured(false); return; }
+      if (!res.ok) { toast.error(res.error || "SMS failed"); return; }
+      toast.success(`SMS sent to ${lead.name}`);
+    } catch { toast.error("SMS failed"); }
+  };
 
   const signOut = async () => { await supabase.auth.signOut(); navigate({ to: "/" }); };
 
@@ -156,6 +176,20 @@ function Dashboard() {
         </div>
       )}
 
+      {twilioConfigured === false && (
+        <div className="border-b border-yellow-500/30 bg-yellow-500/10">
+          <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2.5 text-sm">
+            <ShieldAlert className="h-4 w-4 text-yellow-500" />
+            <span className="text-foreground">
+              <span className="font-semibold">Connect Twilio</span> to send real SMS — add{" "}
+              <code className="rounded bg-background/60 px-1 font-mono text-xs">TWILIO_ACCOUNT_SID</code>,{" "}
+              <code className="rounded bg-background/60 px-1 font-mono text-xs">TWILIO_AUTH_TOKEN</code>, and{" "}
+              <code className="rounded bg-background/60 px-1 font-mono text-xs">TWILIO_PHONE_NUMBER</code> in Project Settings → Secrets.
+            </span>
+          </div>
+        </div>
+      )}
+
       <main className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
@@ -193,7 +227,7 @@ function Dashboard() {
                     <p className="font-display text-lg text-primary">${(l.estimated_value ?? 0).toLocaleString()}</p>
                     <div className="flex gap-1.5">
                       <ActionButton icon={Phone} onClick={() => toast.success(`Calling ${l.name}...`)}>Call</ActionButton>
-                      <ActionButton icon={MessageSquare} onClick={() => toast.success("SMS thread opened")}>SMS</ActionButton>
+                      <ActionButton icon={MessageSquare} onClick={() => smsLead(l)}>SMS</ActionButton>
                     </div>
                   </div>
                 </li>
