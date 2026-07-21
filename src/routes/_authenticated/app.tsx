@@ -121,6 +121,9 @@ function Dashboard() {
             <span className="ml-3 hidden text-xs text-muted-foreground sm:inline">/ {business?.name}</span>
           </Link>
           <div className="flex items-center gap-2">
+            <Link to="/marketing" className="hidden items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground hover:border-primary hover:text-primary sm:inline-flex">
+              <Sparkles className="h-3.5 w-3.5" /> AI Marketing
+            </Link>
             {isAdmin && (
               <Link to="/admin" className="hidden items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary sm:inline-flex">
                 <ShieldAlert className="h-3.5 w-3.5" /> Admin
@@ -133,6 +136,7 @@ function Dashboard() {
               <LogOut className="h-3.5 w-3.5" /> Sign out
             </button>
           </div>
+
         </div>
       </header>
 
