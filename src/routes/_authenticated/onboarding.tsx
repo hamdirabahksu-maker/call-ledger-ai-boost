@@ -82,6 +82,9 @@ function Onboarding() {
       <main className="mx-auto max-w-2xl px-4 py-12">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">Setup · takes 90 seconds</p>
         <h1 className="mt-3 font-display text-4xl">Tell us about the shop.</h1>
+      <main className="mx-auto max-w-2xl px-4 py-12 animate-fade-in">
+        <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">Setup · takes 90 seconds</p>
+        <h1 className="mt-3 font-display text-4xl">Tell us about your business.</h1>
         <p className="mt-2 text-muted-foreground">We use this to answer callers in your voice.</p>
 
         <form onSubmit={save} className="mt-10 space-y-6">
@@ -90,22 +93,30 @@ function Onboarding() {
               className="h-11 w-full rounded-md border border-border bg-card px-3.5 focus:border-primary focus:outline-none" />
           </Field>
 
-          <Field label="Trade">
-            <div className="grid grid-cols-3 gap-2">
-              {TRADES.map((t) => (
-                <button key={t.id} type="button" onClick={() => setTrade(t.id)}
-                  className={`flex items-center gap-2 rounded-md border p-3 text-sm font-medium transition ${
-                    trade === t.id ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-muted-foreground hover:text-foreground"
-                  }`}>
-                  <t.icon className="h-4 w-4" /> {t.label}
-                </button>
-              ))}
-            </div>
-          </Field>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Industry">
+              <select value={trade} onChange={(e) => setTrade(e.target.value)}
+                className="h-11 w-full rounded-md border border-border bg-card px-3 focus:border-primary focus:outline-none">
+                {INDUSTRIES.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </Field>
+            <Field label="Country">
+              <select value={country} onChange={(e) => setCountry(e.target.value)}
+                className="h-11 w-full rounded-md border border-border bg-card px-3 focus:border-primary focus:outline-none">
+                {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </Field>
+          </div>
+
+          {trade.toLowerCase().includes("clinic") && (
+            <p className="rounded-md border border-primary/40 bg-primary/10 p-3 text-xs text-foreground">
+              Clinic mode: CallLedger handles booking, reminders, and admin messages only. It will never provide medical advice or triage.
+            </p>
+          )}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Business phone">
-              <input required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(555) 123-4567" type="tel"
+              <input required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 (555) 123-4567" type="tel"
                 className="h-11 w-full rounded-md border border-border bg-card px-3.5 focus:border-primary focus:outline-none" />
             </Field>
             <Field label="Service area">
@@ -118,6 +129,7 @@ function Onboarding() {
             <textarea value={msg} onChange={(e) => setMsg(e.target.value)} rows={4}
               className="w-full rounded-md border border-border bg-card px-3.5 py-3 focus:border-primary focus:outline-none" />
           </Field>
+
 
           <button type="submit" disabled={busy}
             className="inline-flex h-12 items-center gap-2 rounded-md bg-primary px-6 font-semibold text-primary-foreground transition hover:brightness-110 disabled:opacity-50">
