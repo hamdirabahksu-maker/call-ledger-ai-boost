@@ -60,23 +60,46 @@ function Admin() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-8">
+      <main className="mx-auto max-w-7xl px-4 py-8 animate-fade-in">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">Operations</p>
         <h1 className="mt-2 font-display text-4xl">Control room</h1>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-3">
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Stat icon={Users} label="Waitlist" value={data.stats.waitlist} />
           <Stat icon={Building2} label="Shops onboarded" value={data.stats.businesses} />
           <Stat icon={CreditCard} label="Paying customers" value={data.stats.paying} tone="amber" />
+          <Stat icon={Sparkles} label="Marketing drafts" value={data.stats.drafts} />
         </div>
 
-        <Section title="Waitlist" sub={`${data.waitlist.length} entries`}>
+        {!data.integrations.resend && (
+          <div className="mt-6 flex items-start gap-3 rounded-md border border-yellow-500/40 bg-yellow-500/10 p-3 text-sm">
+            <Mail className="mt-0.5 h-4 w-4 shrink-0 text-yellow-400" />
+            <div className="flex-1">
+              <p className="font-semibold text-foreground">Connect Resend to send waitlist confirmations</p>
+              <p className="text-yellow-100/80">Add <code className="font-mono text-xs">RESEND_API_KEY</code> in Project Settings → Secrets. Waitlist signups will start emailing automatically.</p>
+            </div>
+          </div>
+        )}
+
+        <Section
+          title="Waitlist"
+          sub={`${data.waitlist.length} entries`}
+          action={
+            <button
+              onClick={() => exportCsv(data.waitlist, ["email", "trade", "country", "created_at"], "waitlist.csv")}
+              className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground hover:border-primary hover:text-primary"
+            >
+              <Download className="h-3 w-3" /> Export CSV
+            </button>
+          }
+        >
           <Table
-            cols={["email", "trade", "created_at"]}
+            cols={["email", "trade", "country", "created_at"]}
             rows={data.waitlist}
             format={{ created_at: (v) => new Date(v).toLocaleString() }}
           />
         </Section>
+
 
         <Section title="Businesses" sub={`${data.businesses.length} shops`}>
           <Table
