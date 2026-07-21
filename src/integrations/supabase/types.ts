@@ -19,10 +19,15 @@ export type Database = {
           business_id: string
           created_at: string
           customer_name: string
+          email: string | null
+          ends_at: string | null
           id: string
           job: string | null
           lead_id: string | null
-          scheduled_at: string
+          notes: string | null
+          phone: string | null
+          source: string
+          starts_at: string
           status: string
           updated_at: string
           value_cents: number
@@ -31,10 +36,15 @@ export type Database = {
           business_id: string
           created_at?: string
           customer_name: string
+          email?: string | null
+          ends_at?: string | null
           id?: string
           job?: string | null
           lead_id?: string | null
-          scheduled_at: string
+          notes?: string | null
+          phone?: string | null
+          source?: string
+          starts_at: string
           status?: string
           updated_at?: string
           value_cents?: number
@@ -43,10 +53,15 @@ export type Database = {
           business_id?: string
           created_at?: string
           customer_name?: string
+          email?: string | null
+          ends_at?: string | null
           id?: string
           job?: string | null
           lead_id?: string | null
-          scheduled_at?: string
+          notes?: string | null
+          phone?: string | null
+          source?: string
+          starts_at?: string
           status?: string
           updated_at?: string
           value_cents?: number
@@ -71,6 +86,10 @@ export type Database = {
       businesses: {
         Row: {
           after_hours_message: string | null
+          availability: Json
+          booking_enabled: boolean
+          booking_slug: string | null
+          buffer_minutes: number
           country: string | null
           created_at: string
           id: string
@@ -78,11 +97,17 @@ export type Database = {
           owner_id: string
           phone: string | null
           service_area: string | null
+          slot_minutes: number
+          timezone: string | null
           trade: string
           updated_at: string
         }
         Insert: {
           after_hours_message?: string | null
+          availability?: Json
+          booking_enabled?: boolean
+          booking_slug?: string | null
+          buffer_minutes?: number
           country?: string | null
           created_at?: string
           id?: string
@@ -90,11 +115,17 @@ export type Database = {
           owner_id: string
           phone?: string | null
           service_area?: string | null
+          slot_minutes?: number
+          timezone?: string | null
           trade: string
           updated_at?: string
         }
         Update: {
           after_hours_message?: string | null
+          availability?: Json
+          booking_enabled?: boolean
+          booking_slug?: string | null
+          buffer_minutes?: number
           country?: string | null
           created_at?: string
           id?: string
@@ -102,6 +133,8 @@ export type Database = {
           owner_id?: string
           phone?: string | null
           service_area?: string | null
+          slot_minutes?: number
+          timezone?: string | null
           trade?: string
           updated_at?: string
         }

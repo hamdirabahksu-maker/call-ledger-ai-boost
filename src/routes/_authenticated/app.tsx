@@ -7,16 +7,18 @@ import { useServerFn } from "@tanstack/react-start";
 import { seedDashboardIfEmpty } from "@/lib/dashboard.functions";
 import { createCheckoutSession } from "@/lib/checkout.functions";
 import { getTwilioStatus, sendSms } from "@/lib/sms.functions";
+import { updateBookingStatus } from "@/lib/bookings.functions";
 import {
   Zap, PhoneMissed, Phone, MessageSquare, Star, Calendar, DollarSign,
   Clock, MapPin, Send, LogOut, Settings, TrendingUp, Lock, ShieldAlert, Sparkles,
+  Link2, Check, X,
 } from "lucide-react";
 
 
-type Business = { id: string; name: string; trade: string; phone: string | null; service_area: string | null };
+type Business = { id: string; name: string; trade: string; phone: string | null; service_area: string | null; booking_slug: string | null; booking_enabled: boolean };
 type Lead = { id: string; name: string; phone: string | null; issue: string | null; estimated_value: number | null; source: string | null; urgency: string };
 type Call = { id: string; from_number: string; recovered: boolean; note: string | null; created_at: string };
-type Booking = { id: string; customer_name: string; job: string | null; scheduled_at: string; value_cents: number };
+type Booking = { id: string; customer_name: string; job: string | null; starts_at: string; value_cents: number; status: string; phone: string | null; source: string };
 type Sub = { plan: string | null; status: string } | null;
 
 export const Route = createFileRoute("/_authenticated/app")({
@@ -42,6 +44,7 @@ function Dashboard() {
   const seed = useServerFn(seedDashboardIfEmpty);
   const checkout = useServerFn(createCheckoutSession);
   const twilioStatus = useServerFn(getTwilioStatus);
+  const updateBookingStatusFn = useServerFn(updateBookingStatus);
   const sendSmsFn = useServerFn(sendSms);
   const resumeRef = useRef(false);
 
@@ -56,7 +59,7 @@ function Dashboard() {
       const [{ data: l }, { data: c }, { data: b }, { data: s }, { data: u }] = await Promise.all([
         supabase.from("leads").select("*").eq("business_id", biz.id).order("created_at", { ascending: false }).limit(10),
         supabase.from("calls").select("*").eq("business_id", biz.id).order("created_at", { ascending: false }).limit(10),
-        supabase.from("bookings").select("*").eq("business_id", biz.id).order("scheduled_at", { ascending: true }).limit(10),
+        supabase.from("bookings").select("*").eq("business_id", biz.id).order("starts_at", { ascending: true }).limit(10),
         supabase.from("subscriptions").select("plan,status").eq("business_id", biz.id).maybeSingle(),
         supabase.auth.getUser(),
       ]);
@@ -271,25 +274,57 @@ function Dashboard() {
           </section>
 
           <section className="rounded-lg border border-border bg-card">
-            <SectionHeader icon={Calendar} title="Today's schedule" sub={business?.service_area || "Your route"} />
+            <SectionHeader icon={Calendar} title="Upcoming bookings" sub={business?.service_area || "Your route"} />
+            {business?.booking_slug && (
+              <div className="flex items-center gap-2 border-b border-border bg-background/40 px-4 py-2.5">
+                <Link2 className="h-3.5 w-3.5 text-primary" />
+                <code className="flex-1 truncate font-mono text-[11px] text-muted-foreground">
+                  callledger.app/book/{business.booking_slug}
+                </code>
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/book/${business.booking_slug}`;
+                    navigator.clipboard.writeText(url).then(() => toast.success("Booking link copied"));
+                  }}
+                  className="rounded-md border border-primary/40 bg-primary/10 px-2 py-1 text-[11px] font-semibold text-primary hover:bg-primary/20"
+                >
+                  Copy link
+                </button>
+              </div>
+            )}
             <ul className="divide-y divide-border">
-              {bookings.length === 0 && <li className="p-6 text-center text-sm text-muted-foreground">Nothing booked.</li>}
+              {bookings.length === 0 && <li className="p-6 text-center text-sm text-muted-foreground">Nothing booked. Share your link to fill your calendar.</li>}
               {bookings.map((s) => (
                 <li key={s.id} className="p-4">
-                  <div className="flex items-baseline justify-between">
-                    <span className="font-mono text-sm text-primary">{new Date(s.scheduled_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
-                    <span className="text-sm text-muted-foreground">${(s.value_cents / 100).toLocaleString()}</span>
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="font-mono text-sm text-primary">
+                      {new Date(s.starts_at).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                    </span>
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{s.status}</span>
                   </div>
                   <p className="mt-1 font-semibold">{s.customer_name}</p>
-                  <p className="text-sm text-muted-foreground">{s.job}</p>
+                  <p className="text-sm text-muted-foreground">{s.job || "New booking"}</p>
+                  {s.phone && <p className="mt-0.5 text-xs text-muted-foreground/80">{s.phone}</p>}
+                  <div className="mt-2 flex gap-1.5">
+                    {s.status !== "scheduled" && s.status !== "completed" && (
+                      <BookingAction icon={Check} onClick={async () => {
+                        try { await updateBookingStatusFn({ data: { id: s.id, status: "scheduled" } }); setBookings((bs) => bs.map((b) => b.id === s.id ? { ...b, status: "scheduled" } : b)); toast.success("Confirmed"); } catch { toast.error("Failed"); }
+                      }}>Confirm</BookingAction>
+                    )}
+                    {s.status !== "completed" && s.status !== "cancelled" && (
+                      <BookingAction icon={Star} onClick={async () => {
+                        try { await updateBookingStatusFn({ data: { id: s.id, status: "completed" } }); setBookings((bs) => bs.map((b) => b.id === s.id ? { ...b, status: "completed" } : b)); toast.success("Marked complete"); } catch { toast.error("Failed"); }
+                      }}>Complete</BookingAction>
+                    )}
+                    {s.status !== "cancelled" && (
+                      <BookingAction icon={X} onClick={async () => {
+                        try { await updateBookingStatusFn({ data: { id: s.id, status: "cancelled" } }); setBookings((bs) => bs.map((b) => b.id === s.id ? { ...b, status: "cancelled" } : b)); toast.success("Cancelled"); } catch { toast.error("Failed"); }
+                      }}>Cancel</BookingAction>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
-            <div className="border-t border-border p-3">
-              <button className="flex w-full items-center justify-center gap-2 rounded-md border border-border py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground">
-                <MapPin className="h-3.5 w-3.5" /> Open route in Maps
-              </button>
-            </div>
           </section>
         </div>
       </main>
@@ -339,6 +374,14 @@ function QuickAction({ icon: Icon, title, body, onClick }: { icon: React.Compone
         <p className="font-semibold text-foreground">{title}</p>
         <p className="mt-0.5 text-xs text-muted-foreground">{body}</p>
       </div>
+    </button>
+  );
+}
+
+function BookingAction({ icon: Icon, children, onClick }: { icon: React.ComponentType<{ className?: string }>; children: React.ReactNode; onClick: () => void }) {
+  return (
+    <button onClick={onClick} className="inline-flex items-center gap-1 rounded-md border border-border bg-background/50 px-2 py-1 text-[11px] font-medium text-foreground hover:border-primary hover:bg-primary/10 hover:text-primary">
+      <Icon className="h-3 w-3" /> {children}
     </button>
   );
 }
