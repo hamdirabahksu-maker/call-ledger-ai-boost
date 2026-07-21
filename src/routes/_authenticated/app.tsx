@@ -7,9 +7,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { seedDashboardIfEmpty } from "@/lib/dashboard.functions";
 import { createCheckoutSession } from "@/lib/checkout.functions";
 import { getTwilioStatus, sendSms } from "@/lib/sms.functions";
+import { updateBookingStatus } from "@/lib/bookings.functions";
 import {
   Zap, PhoneMissed, Phone, MessageSquare, Star, Calendar, DollarSign,
   Clock, MapPin, Send, LogOut, Settings, TrendingUp, Lock, ShieldAlert, Sparkles,
+  Link2, Check, X,
 } from "lucide-react";
 
 
