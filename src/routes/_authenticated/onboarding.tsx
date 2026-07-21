@@ -20,11 +20,13 @@ function Onboarding() {
   const { plan } = Route.useSearch();
   const checkout = useServerFn(createCheckoutSession);
   const [name, setName] = useState("");
-  const [trade, setTrade] = useState<string>("HVAC");
+  const [trade, setTrade] = useState<string>(INDUSTRIES[0]);
+  const [country, setCountry] = useState<string>(COUNTRIES[0]);
   const [phone, setPhone] = useState("");
   const [area, setArea] = useState("");
-  const [msg, setMsg] = useState("Hi, this is [Shop] — sorry we missed you. Text us what you need and we'll be right back to you.");
+  const [msg, setMsg] = useState("Hi, this is [Business] — sorry we missed you. Text us what you need and we'll be right back to you.");
   const [busy, setBusy] = useState(false);
+
 
   useEffect(() => {
     (async () => {
