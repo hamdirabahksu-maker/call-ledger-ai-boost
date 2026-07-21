@@ -8,8 +8,9 @@ import { seedDashboardIfEmpty } from "@/lib/dashboard.functions";
 import { createCheckoutSession } from "@/lib/checkout.functions";
 import {
   Zap, PhoneMissed, Phone, MessageSquare, Star, Calendar, DollarSign,
-  Clock, MapPin, Send, LogOut, Settings, TrendingUp, Lock, ShieldAlert,
+  Clock, MapPin, Send, LogOut, Settings, TrendingUp, Lock, ShieldAlert, Sparkles,
 } from "lucide-react";
+
 
 type Business = { id: string; name: string; trade: string; phone: string | null; service_area: string | null };
 type Lead = { id: string; name: string; phone: string | null; issue: string | null; estimated_value: number | null; source: string | null; urgency: string };
