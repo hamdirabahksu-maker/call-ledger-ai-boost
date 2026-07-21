@@ -79,10 +79,8 @@ function Onboarding() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-2xl px-4 py-12">
-        <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">Setup · takes 90 seconds</p>
-        <h1 className="mt-3 font-display text-4xl">Tell us about the shop.</h1>
       <main className="mx-auto max-w-2xl px-4 py-12 animate-fade-in">
+
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">Setup · takes 90 seconds</p>
         <h1 className="mt-3 font-display text-4xl">Tell us about your business.</h1>
         <p className="mt-2 text-muted-foreground">We use this to answer callers in your voice.</p>
