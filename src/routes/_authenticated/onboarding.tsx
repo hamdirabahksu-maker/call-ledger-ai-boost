@@ -35,7 +35,9 @@ function Onboarding() {
         setName(data.name); setTrade(data.trade);
         setPhone(data.phone || ""); setArea(data.service_area || "");
         setMsg(data.after_hours_message || msg);
+        if ((data as any).country) setCountry((data as any).country);
       }
+
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
