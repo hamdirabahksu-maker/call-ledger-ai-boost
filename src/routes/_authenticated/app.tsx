@@ -71,8 +71,24 @@ function Dashboard() {
         setIsAdmin(!!admin);
       }
       setLoading(false);
+      twilioStatus().then((s) => setTwilioConfigured(s.twilioConfigured)).catch(() => setTwilioConfigured(false));
     })();
-  }, [navigate, seed]);
+  }, [navigate, seed, twilioStatus]);
+
+  const smsLead = async (lead: Lead) => {
+    if (!lead.phone) { toast.error("No phone on this lead"); return; }
+    if (twilioConfigured === false) {
+      toast.error("Connect Twilio to send SMS — add secrets in Project Settings.");
+      return;
+    }
+    const message = `Hi ${lead.name.split(" ")[0]}, this is ${business?.name ?? "our team"} — we can help with "${lead.issue ?? "your request"}". Reply YES to book.`;
+    try {
+      const res = await sendSmsFn({ data: { to: lead.phone, body: message, leadId: lead.id } });
+      if (!res.configured) { toast.error("Twilio not configured"); setTwilioConfigured(false); return; }
+      if (!res.ok) { toast.error(res.error || "SMS failed"); return; }
+      toast.success(`SMS sent to ${lead.name}`);
+    } catch { toast.error("SMS failed"); }
+  };
 
   const signOut = async () => { await supabase.auth.signOut(); navigate({ to: "/" }); };
 
