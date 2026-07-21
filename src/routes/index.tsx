@@ -191,6 +191,9 @@ function Solution() {
             </RevealCard>
           ))}
         </div>
+        <p className="mt-8 max-w-2xl text-base text-muted-foreground">
+          <span className="text-foreground">Share a booking link.</span> Clients pick a slot. You wake up to a full calendar.
+        </p>
 
         <div id="industries" className="mt-20">
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">Who uses CallLedger</p>
