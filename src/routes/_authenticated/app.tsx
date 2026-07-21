@@ -16,7 +16,7 @@ import {
 type Business = { id: string; name: string; trade: string; phone: string | null; service_area: string | null };
 type Lead = { id: string; name: string; phone: string | null; issue: string | null; estimated_value: number | null; source: string | null; urgency: string };
 type Call = { id: string; from_number: string; recovered: boolean; note: string | null; created_at: string };
-type Booking = { id: string; customer_name: string; job: string | null; scheduled_at: string; value_cents: number };
+type Booking = { id: string; customer_name: string; job: string | null; starts_at: string; value_cents: number; status: string; phone: string | null; source: string };
 type Sub = { plan: string | null; status: string } | null;
 
 export const Route = createFileRoute("/_authenticated/app")({
