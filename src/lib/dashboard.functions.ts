@@ -44,10 +44,10 @@ export const seedDashboardIfEmpty = createServerFn({ method: "POST" })
     ]);
 
     await supabase.from("bookings").insert([
-      { business_id: biz.id, customer_name: "M. Delaney", job: "Water heater diag", scheduled_at: today(8), value_cents: 85000, status: "scheduled" },
-      { business_id: biz.id, customer_name: "T. Nguyen", job: "Furnace tune-up", scheduled_at: today(10, 30), value_cents: 18900, status: "scheduled" },
-      { business_id: biz.id, customer_name: "S. Alvarez", job: "Leak repair — kitchen", scheduled_at: today(13), value_cents: 42000, status: "scheduled" },
-      { business_id: biz.id, customer_name: "P. Ramanathan", job: "AC service call", scheduled_at: today(15, 30), value_cents: 140000, status: "scheduled" },
+      { business_id: biz.id, customer_name: "M. Delaney", job: "Water heater diag", starts_at: today(8), value_cents: 85000, status: "scheduled", source: "manual" },
+      { business_id: biz.id, customer_name: "T. Nguyen", job: "Furnace tune-up", starts_at: today(10, 30), value_cents: 18900, status: "scheduled", source: "manual" },
+      { business_id: biz.id, customer_name: "S. Alvarez", job: "Leak repair — kitchen", starts_at: today(13), value_cents: 42000, status: "scheduled", source: "manual" },
+      { business_id: biz.id, customer_name: "P. Ramanathan", job: "AC service call", starts_at: today(15, 30), value_cents: 140000, status: "scheduled", source: "manual" },
     ]);
 
     return { seeded: true };
