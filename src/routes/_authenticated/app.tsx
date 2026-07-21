@@ -56,7 +56,7 @@ function Dashboard() {
       const [{ data: l }, { data: c }, { data: b }, { data: s }, { data: u }] = await Promise.all([
         supabase.from("leads").select("*").eq("business_id", biz.id).order("created_at", { ascending: false }).limit(10),
         supabase.from("calls").select("*").eq("business_id", biz.id).order("created_at", { ascending: false }).limit(10),
-        supabase.from("bookings").select("*").eq("business_id", biz.id).order("scheduled_at", { ascending: true }).limit(10),
+        supabase.from("bookings").select("*").eq("business_id", biz.id).order("starts_at", { ascending: true }).limit(10),
         supabase.from("subscriptions").select("plan,status").eq("business_id", biz.id).maybeSingle(),
         supabase.auth.getUser(),
       ]);
@@ -277,7 +277,7 @@ function Dashboard() {
               {bookings.map((s) => (
                 <li key={s.id} className="p-4">
                   <div className="flex items-baseline justify-between">
-                    <span className="font-mono text-sm text-primary">{new Date(s.scheduled_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
+                    <span className="font-mono text-sm text-primary">{new Date(s.starts_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
                     <span className="text-sm text-muted-foreground">${(s.value_cents / 100).toLocaleString()}</span>
                   </div>
                   <p className="mt-1 font-semibold">{s.customer_name}</p>
