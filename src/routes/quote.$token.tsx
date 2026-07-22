@@ -29,7 +29,7 @@ function QuotePage() {
   useEffect(() => {
     (async () => {
       const r = await getFn({ data: { token } });
-      setEst(r.estimate as Estimate | null);
+      setEst(r.estimate as unknown as Estimate | null);
       setBiz(r.business as Biz | null);
       setLoading(false);
     })();

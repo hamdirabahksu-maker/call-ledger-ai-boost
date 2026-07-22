@@ -26,7 +26,7 @@ function InvoicePage() {
 
   useEffect(() => { (async () => {
     const r = await getFn({ data: { token } });
-    setInv(r.invoice as Invoice | null); setBiz(r.business as Biz | null); setLoading(false);
+    setInv(r.invoice as unknown as Invoice | null); setBiz(r.business as Biz | null); setLoading(false);
   })(); }, [getFn, token]);
 
   if (loading) return <div className="grid min-h-screen place-items-center text-muted-foreground">Loading invoice…</div>;
