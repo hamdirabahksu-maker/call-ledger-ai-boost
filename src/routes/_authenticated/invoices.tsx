@@ -38,7 +38,7 @@ function InvoicesPage() {
       const { data: biz } = await supabase.from("businesses").select("id").maybeSingle();
       setBusinessId(biz?.id ?? null);
       const list = await listFn().catch(() => []);
-      setRows(list as Invoice[]);
+      setRows(list as unknown as Invoice[]);
       setLoading(false);
       twilioFn().then((s) => setTwilioOk(s.twilioConfigured)).catch(() => setTwilioOk(false));
     })();
@@ -58,7 +58,7 @@ function InvoicesPage() {
         status: (editing.status as "draft" | "sent" | "paid" | "overdue" | "void") ?? "draft",
       }});
       toast.success("Saved"); setEditing(null);
-      const list = await listFn(); setRows(list as Invoice[]);
+      const list = await listFn(); setRows(list as unknown as Invoice[]);
     } catch { toast.error("Save failed"); }
   };
 
@@ -73,12 +73,12 @@ function InvoicesPage() {
       if (!res.ok) { toast.error(res.error || "SMS failed"); return; }
       await saveFn({ data: { id: inv.id, business_id: inv.business_id, customer_name: inv.customer_name, title: inv.title, line_items: inv.line_items, status: "sent" }});
       toast.success("Invoice sent");
-      const list = await listFn(); setRows(list as Invoice[]);
+      const list = await listFn(); setRows(list as unknown as Invoice[]);
     } catch { toast.error("SMS failed"); }
   };
 
   const markPaid = async (id: string) => {
-    try { await paidFn({ data: { id } }); toast.success("Marked paid"); const list = await listFn(); setRows(list as Invoice[]); }
+    try { await paidFn({ data: { id } }); toast.success("Marked paid"); const list = await listFn(); setRows(list as unknown as Invoice[]); }
     catch { toast.error("Failed"); }
   };
 

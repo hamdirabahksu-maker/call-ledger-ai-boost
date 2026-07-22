@@ -43,7 +43,7 @@ function EstimatesPage() {
       setBusinessId(biz?.id ?? null);
       setTrade(biz?.trade ?? "");
       const list = await listFn().catch(() => []);
-      setRows(list as Estimate[]);
+      setRows(list as unknown as Estimate[]);
       setLoading(false);
       twilioFn().then((s) => setTwilioOk(s.twilioConfigured)).catch(() => setTwilioOk(false));
     })();
@@ -69,7 +69,7 @@ function EstimatesPage() {
       toast.success("Saved");
       setEditing(null);
       const list = await listFn();
-      setRows(list as Estimate[]);
+      setRows(list as unknown as Estimate[]);
       return res;
     } catch { toast.error("Save failed"); }
   };
@@ -95,7 +95,7 @@ function EstimatesPage() {
       if (!res.ok) { toast.error(res.error || "SMS failed"); return; }
       await saveFn({ data: { id: e.id, business_id: e.business_id, customer_name: e.customer_name, title: e.title, line_items: e.line_items as LineItem[], status: "sent" }});
       toast.success("SMS sent");
-      const list = await listFn(); setRows(list as Estimate[]);
+      const list = await listFn(); setRows(list as unknown as Estimate[]);
     } catch { toast.error("SMS failed"); }
   };
 
