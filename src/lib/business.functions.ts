@@ -16,7 +16,17 @@ export const updateBusinessSettings = createServerFn({ method: "POST" })
     timezone?: string;
   }) => i)
   .handler(async ({ data, context }) => {
-    const patch: Record<string, unknown> = {};
+    const patch: {
+      name?: string;
+      phone?: string | null;
+      service_area?: string | null;
+      google_review_url?: string | null;
+      after_hours_message?: string | null;
+      booking_enabled?: boolean;
+      slot_minutes?: number;
+      buffer_minutes?: number;
+      timezone?: string | null;
+    } = {};
     if (data.name !== undefined) patch.name = data.name.trim().slice(0, 120);
     if (data.phone !== undefined) patch.phone = data.phone.trim().slice(0, 30) || null;
     if (data.service_area !== undefined) patch.service_area = data.service_area.trim().slice(0, 200) || null;
