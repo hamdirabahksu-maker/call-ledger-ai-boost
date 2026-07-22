@@ -92,6 +92,7 @@ export type Database = {
           buffer_minutes: number
           country: string | null
           created_at: string
+          google_review_url: string | null
           id: string
           name: string
           owner_id: string
@@ -110,6 +111,7 @@ export type Database = {
           buffer_minutes?: number
           country?: string | null
           created_at?: string
+          google_review_url?: string | null
           id?: string
           name: string
           owner_id: string
@@ -128,6 +130,7 @@ export type Database = {
           buffer_minutes?: number
           country?: string | null
           created_at?: string
+          google_review_url?: string | null
           id?: string
           name?: string
           owner_id?: string
@@ -171,6 +174,213 @@ export type Database = {
             columns: ["business_id"]
             isOneToOne: false
             referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customers: {
+        Row: {
+          address: string | null
+          business_id: string
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          business_id: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          business_id?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      estimates: {
+        Row: {
+          business_id: string
+          created_at: string
+          customer_id: string | null
+          customer_name: string
+          email: string | null
+          id: string
+          line_items: Json
+          notes: string | null
+          phone: string | null
+          public_token: string
+          status: string
+          subtotal_cents: number
+          tax_cents: number
+          title: string
+          total_cents: number
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          customer_id?: string | null
+          customer_name: string
+          email?: string | null
+          id?: string
+          line_items?: Json
+          notes?: string | null
+          phone?: string | null
+          public_token?: string
+          status?: string
+          subtotal_cents?: number
+          tax_cents?: number
+          title?: string
+          total_cents?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string
+          email?: string | null
+          id?: string
+          line_items?: Json
+          notes?: string | null
+          phone?: string | null
+          public_token?: string
+          status?: string
+          subtotal_cents?: number
+          tax_cents?: number
+          title?: string
+          total_cents?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "estimates_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estimates_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          amount_paid_cents: number
+          business_id: string
+          created_at: string
+          customer_id: string | null
+          customer_name: string
+          due_date: string | null
+          email: string | null
+          estimate_id: string | null
+          id: string
+          line_items: Json
+          notes: string | null
+          phone: string | null
+          public_token: string
+          status: string
+          subtotal_cents: number
+          tax_cents: number
+          title: string
+          total_cents: number
+          updated_at: string
+        }
+        Insert: {
+          amount_paid_cents?: number
+          business_id: string
+          created_at?: string
+          customer_id?: string | null
+          customer_name: string
+          due_date?: string | null
+          email?: string | null
+          estimate_id?: string | null
+          id?: string
+          line_items?: Json
+          notes?: string | null
+          phone?: string | null
+          public_token?: string
+          status?: string
+          subtotal_cents?: number
+          tax_cents?: number
+          title?: string
+          total_cents?: number
+          updated_at?: string
+        }
+        Update: {
+          amount_paid_cents?: number
+          business_id?: string
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string
+          due_date?: string | null
+          email?: string | null
+          estimate_id?: string | null
+          id?: string
+          line_items?: Json
+          notes?: string | null
+          phone?: string | null
+          public_token?: string
+          status?: string
+          subtotal_cents?: number
+          tax_cents?: number
+          title?: string
+          total_cents?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_estimate_id_fkey"
+            columns: ["estimate_id"]
+            isOneToOne: false
+            referencedRelation: "estimates"
             referencedColumns: ["id"]
           },
         ]
@@ -286,6 +496,60 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      review_requests: {
+        Row: {
+          booking_id: string | null
+          business_id: string
+          created_at: string
+          customer_name: string
+          google_review_url: string | null
+          id: string
+          phone: string | null
+          sent_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          booking_id?: string | null
+          business_id: string
+          created_at?: string
+          customer_name: string
+          google_review_url?: string | null
+          id?: string
+          phone?: string | null
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          booking_id?: string | null
+          business_id?: string
+          created_at?: string
+          customer_name?: string
+          google_review_url?: string | null
+          id?: string
+          phone?: string | null
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_requests_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_requests_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscriptions: {
         Row: {
