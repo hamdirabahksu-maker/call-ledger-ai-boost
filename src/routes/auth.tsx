@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Zap, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { BrandLockup } from "@/components/brand-lockup";
 
 const searchSchema = z.object({
   mode: z.enum(["signup", "login"]).catch("login"),
@@ -74,11 +75,8 @@ function AuthPage() {
         <Link to="/" className="mb-10 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Back
         </Link>
-        <div className="mb-8 flex items-center gap-2">
-          <div className="grid h-8 w-8 place-items-center rounded-sm bg-primary text-primary-foreground">
-            <Zap className="h-4 w-4" strokeWidth={2.5} />
-          </div>
-          <span className="font-display text-xl">CALL<span className="text-primary">LEDGER</span></span>
+        <div className="mb-8">
+          <BrandLockup size="lg" />
         </div>
 
         <h1 className="font-display text-3xl">

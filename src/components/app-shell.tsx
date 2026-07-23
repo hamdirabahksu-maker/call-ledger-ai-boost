@@ -1,8 +1,9 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { BrandLockup } from "@/components/brand-lockup";
 import {
-  Zap, LayoutDashboard, PhoneMissed, Users, Calendar, FileText, Receipt,
+  LayoutDashboard, Users, Calendar, FileText, Receipt,
   Star, Sparkles, Settings, ShieldAlert, LogOut, Menu, X,
 } from "lucide-react";
 
@@ -42,10 +43,7 @@ export function AppShell({ children, title, subtitle }: { children: ReactNode; t
     <div className="min-h-screen bg-background">
       {/* Mobile top bar */}
       <div className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-background/95 px-4 py-3 backdrop-blur md:hidden">
-        <Link to="/app" className="flex items-center gap-2">
-          <div className="grid h-7 w-7 place-items-center rounded-sm bg-primary text-primary-foreground"><Zap className="h-4 w-4" strokeWidth={2.5} /></div>
-          <span className="font-display text-lg">CALL<span className="text-primary">LEDGER</span></span>
-        </Link>
+        <BrandLockup size="sm" href="/app" showSubtitle={false} />
         <button onClick={() => setOpen(!open)} className="grid h-9 w-9 place-items-center rounded-md border border-border">
           {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
         </button>
@@ -54,13 +52,10 @@ export function AppShell({ children, title, subtitle }: { children: ReactNode; t
       <div className="flex">
         {/* Sidebar */}
         <aside className={`${open ? "block" : "hidden"} md:block fixed md:sticky top-0 z-30 h-screen w-64 shrink-0 border-r border-border bg-card/40`}>
-          <div className="hidden items-center gap-2 border-b border-border px-5 py-4 md:flex">
-            <div className="grid h-8 w-8 place-items-center rounded-sm bg-primary text-primary-foreground"><Zap className="h-4 w-4" strokeWidth={2.5} /></div>
-            <div>
-              <div className="font-display text-base leading-none">CALL<span className="text-primary">LEDGER</span></div>
-              {bizName && <div className="mt-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">{bizName}</div>}
-            </div>
+          <div className="hidden items-center gap-3 border-b border-border px-5 py-5 md:flex">
+            <BrandLockup size="md" href="/app" />
           </div>
+          {bizName && <div className="hidden px-5 pt-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground md:block">{bizName}</div>}
           <nav className="flex flex-col gap-0.5 p-3">
             {NAV.map((item) => {
               const active = pathname === item.to || (item.to !== "/app" && pathname.startsWith(item.to));
