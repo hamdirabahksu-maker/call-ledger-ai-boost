@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "sonner";
+import { CookieBanner } from "@/components/cookie-banner";
+import { ClientOnly } from "@/components/client-only";
 
 function NotFoundComponent() {
   return (
@@ -130,6 +132,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Outlet />
       <Toaster theme="dark" position="top-right" richColors />
+      <ClientOnly><CookieBanner /></ClientOnly>
     </QueryClientProvider>
   );
 }

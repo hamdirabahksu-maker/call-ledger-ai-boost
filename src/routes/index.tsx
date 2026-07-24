@@ -570,6 +570,9 @@ function Footer() {
         <div className="flex flex-wrap items-center justify-center gap-5">
           <a href="mailto:hamdi.rabahksu@gmail.com" className="hover:text-white">hamdi.rabahksu@gmail.com</a>
           <span className="opacity-40">·</span>
+          <Link to="/privacy" className="hover:text-white">Privacy</Link>
+          <Link to="/terms" className="hover:text-white">Terms</Link>
+          <span className="opacity-40">·</span>
           <span>Built for service businesses worldwide</span>
           <span className="opacity-40">·</span>
           <span>© {new Date().getFullYear()} CallLedger</span>
