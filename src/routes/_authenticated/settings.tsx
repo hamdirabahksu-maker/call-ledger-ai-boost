@@ -82,6 +82,41 @@ function SettingsPage() {
           <Field label="Service area" value={biz.service_area ?? ""} onChange={(v) => setBiz({ ...biz, service_area: v })} />
         </Section>
 
+        <Section title="Billing">
+          {(() => {
+            const paid = sub?.status === "active" || sub?.status === "trialing";
+            const pastDue = sub?.status === "past_due" || sub?.status === "unpaid";
+            const label = paid ? `Paid · ${sub?.plan ?? "—"}` : pastDue ? "Past due" : "Unpaid";
+            const cls = paid ? "bg-primary/15 text-primary" : pastDue ? "bg-yellow-500/15 text-yellow-500" : "bg-muted text-muted-foreground";
+            return (
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <CreditCard className="h-4 w-4 text-primary" />
+                  <div className="flex-1">
+                    <p className="text-sm">
+                      Current plan:{" "}
+                      <span className={`ml-1 inline-flex rounded-full px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest ${cls}`}>{label}</span>
+                    </p>
+                    {sub?.current_period_end && (
+                      <p className="mt-0.5 text-xs text-muted-foreground">Renews {new Date(sub.current_period_end).toLocaleDateString()}</p>
+                    )}
+                  </div>
+                </div>
+                {stripeOk === false && (
+                  <p className="rounded-md border border-yellow-500/30 bg-yellow-500/5 p-2 text-xs text-yellow-100/80">
+                    Stripe isn't connected on this project yet. Add <code className="font-mono">STRIPE_SECRET_KEY</code> to enable checkout.
+                  </p>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={() => startCheckout("pilot")} disabled={stripeOk === false} className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:brightness-110 disabled:opacity-50">{paid ? "Switch to Pilot" : "Start pilot — $49"}</button>
+                  <button onClick={() => startCheckout("starter")} disabled={stripeOk === false} className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-accent disabled:opacity-50">Starter $99</button>
+                  <button onClick={() => startCheckout("growth")} disabled={stripeOk === false} className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-accent disabled:opacity-50">Growth $199</button>
+                </div>
+              </div>
+            );
+          })()}
+        </Section>
+
         <Section title="Booking">
           <label className="flex items-center gap-3">
             <input type="checkbox" checked={biz.booking_enabled} onChange={(e) => setBiz({ ...biz, booking_enabled: e.target.checked })} />
