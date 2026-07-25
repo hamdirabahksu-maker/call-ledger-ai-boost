@@ -215,7 +215,13 @@ function Dashboard() {
                   <div className="flex items-center gap-3 sm:flex-col sm:items-end">
                     <p className="font-display text-lg text-primary">${(l.estimated_value ?? 0).toLocaleString()}</p>
                     <div className="flex gap-1.5">
-                      <ActionButton icon={Phone} onClick={() => toast.success(`Calling ${l.name}...`)}>Call</ActionButton>
+                      {l.phone ? (
+                        <a href={`tel:${l.phone}`} className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background/50 px-2.5 py-1.5 text-xs font-medium text-foreground hover:border-primary hover:bg-primary/10 hover:text-primary">
+                          <Phone className="h-3 w-3" /> Call
+                        </a>
+                      ) : (
+                        <ActionButton icon={Phone} onClick={() => toast.error("No phone on this lead")}>Call</ActionButton>
+                      )}
                       <ActionButton icon={MessageSquare} onClick={() => smsLead(l)}>SMS</ActionButton>
                     </div>
                   </div>
