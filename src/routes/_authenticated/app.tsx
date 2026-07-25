@@ -37,7 +37,6 @@ function Dashboard() {
   const [calls, setCalls] = useState<Call[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [sub, setSub] = useState<Sub>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [twilioConfigured, setTwilioConfigured] = useState<boolean | null>(null);
   const navigate = useNavigate();
