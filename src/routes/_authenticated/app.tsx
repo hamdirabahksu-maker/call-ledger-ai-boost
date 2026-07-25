@@ -4,7 +4,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
-import { seedDashboardIfEmpty } from "@/lib/dashboard.functions";
+
 import { createCheckoutSession } from "@/lib/checkout.functions";
 import { getTwilioStatus, sendSms } from "@/lib/sms.functions";
 import { updateBookingStatus } from "@/lib/bookings.functions";
@@ -41,7 +41,7 @@ function Dashboard() {
   const [twilioConfigured, setTwilioConfigured] = useState<boolean | null>(null);
   const navigate = useNavigate();
   const { plan: resumePlan, checkout: checkoutStatus } = Route.useSearch();
-  const seed = useServerFn(seedDashboardIfEmpty);
+  
   const checkout = useServerFn(createCheckoutSession);
   const twilioStatus = useServerFn(getTwilioStatus);
   const updateBookingStatusFn = useServerFn(updateBookingStatus);
@@ -54,7 +54,7 @@ function Dashboard() {
       if (!biz) { navigate({ to: "/onboarding" }); return; }
       setBusiness(biz as Business);
 
-      await seed({ data: { businessId: biz.id } }).catch(() => {});
+
 
       const [{ data: l }, { data: c }, { data: b }, { data: s }, { data: u }] = await Promise.all([
         supabase.from("leads").select("*").eq("business_id", biz.id).order("created_at", { ascending: false }).limit(10),
@@ -76,7 +76,7 @@ function Dashboard() {
       setLoading(false);
       twilioStatus().then((s) => setTwilioConfigured(s.twilioConfigured)).catch(() => setTwilioConfigured(false));
     })();
-  }, [navigate, seed, twilioStatus]);
+  }, [navigate, twilioStatus]);
 
   const smsLead = async (lead: Lead) => {
     if (!lead.phone) { toast.error("No phone on this lead"); return; }
@@ -110,8 +110,22 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    if (checkoutStatus === "success") toast.success("Payment received — you're live.");
-  }, [checkoutStatus]);
+    if (checkoutStatus !== "success" || !business) return;
+    let cancelled = false;
+    (async () => {
+      for (let i = 0; i < 5; i++) {
+        const { data: s } = await supabase.from("subscriptions").select("plan,status").eq("business_id", business.id).maybeSingle();
+        if (cancelled) return;
+        if (s && (s.status === "active" || s.status === "trialing")) {
+          setSub(s as Sub);
+          toast.success("You're live.");
+          return;
+        }
+        await new Promise((r) => setTimeout(r, 1500));
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [checkoutStatus, business]);
 
   useEffect(() => {
     if (!business || !resumePlan || resumeRef.current) return;
@@ -152,9 +166,10 @@ function Dashboard() {
                 <ShieldAlert className="h-3.5 w-3.5" /> Admin
               </Link>
             )}
-            <Link to="/onboarding" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground">
+            <Link to="/settings" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground">
               <Settings className="h-4 w-4" />
             </Link>
+
             <button onClick={signOut} className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground">
               <LogOut className="h-3.5 w-3.5" /> Sign out
             </button>
