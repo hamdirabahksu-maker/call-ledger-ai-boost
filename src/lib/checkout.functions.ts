@@ -26,7 +26,7 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
     const plan = PLAN_META[data.plan];
     if (!plan) throw new Error("Unknown plan");
 
-    const origin = process.env.APP_URL || "http://localhost:8080";
+    const origin = resolveAppOrigin();
     const successUrl = `${origin}/app?checkout=success`;
     const cancelUrl = `${origin}/#pricing`;
 
