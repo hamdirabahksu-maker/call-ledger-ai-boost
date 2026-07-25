@@ -313,8 +313,8 @@ function Dashboard() {
             </ul>
           </section>
         </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }
 
