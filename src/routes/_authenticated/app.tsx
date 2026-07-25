@@ -110,8 +110,22 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    if (checkoutStatus === "success") toast.success("Payment received — you're live.");
-  }, [checkoutStatus]);
+    if (checkoutStatus !== "success" || !business) return;
+    let cancelled = false;
+    (async () => {
+      for (let i = 0; i < 5; i++) {
+        const { data: s } = await supabase.from("subscriptions").select("plan,status").eq("business_id", business.id).maybeSingle();
+        if (cancelled) return;
+        if (s && (s.status === "active" || s.status === "trialing")) {
+          setSub(s as Sub);
+          toast.success("You're live.");
+          return;
+        }
+        await new Promise((r) => setTimeout(r, 1500));
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [checkoutStatus, business]);
 
   useEffect(() => {
     if (!business || !resumePlan || resumeRef.current) return;
