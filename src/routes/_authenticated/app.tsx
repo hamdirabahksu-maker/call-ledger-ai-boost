@@ -8,9 +8,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { createCheckoutSession } from "@/lib/checkout.functions";
 import { getTwilioStatus, sendSms } from "@/lib/sms.functions";
 import { updateBookingStatus } from "@/lib/bookings.functions";
+import { AppShell } from "@/components/app-shell";
 import {
-  Zap, PhoneMissed, Phone, MessageSquare, Star, Calendar, DollarSign,
-  Clock, MapPin, Send, LogOut, Settings, TrendingUp, Lock, ShieldAlert, Sparkles,
+  PhoneMissed, Phone, MessageSquare, Star, Calendar, DollarSign,
+  Clock, Send, TrendingUp, Lock, ShieldAlert, FileText, Plus,
   Link2, Check, X,
 } from "lucide-react";
 
