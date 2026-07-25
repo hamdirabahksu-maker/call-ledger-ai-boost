@@ -200,3 +200,43 @@ function Table({ cols, rows, format }: { cols: string[]; rows: Row[]; format?: R
     </table>
   );
 }
+
+function BusinessesTable({ businesses, subscriptions }: { businesses: Row[]; subscriptions: Row[] }) {
+  const subMap = new Map<string, Row>();
+  for (const s of subscriptions) if (!subMap.has(s.business_id)) subMap.set(s.business_id, s);
+  const labelFor = (s?: Row) => {
+    if (!s) return { text: "Unpaid", cls: "bg-muted text-muted-foreground" };
+    if (s.status === "active" || s.status === "trialing") return { text: `Paid · ${s.plan ?? "—"}`, cls: "bg-primary/15 text-primary" };
+    if (s.status === "past_due" || s.status === "unpaid") return { text: "Past due", cls: "bg-yellow-500/15 text-yellow-500" };
+    if (s.status === "canceled" || s.status === "cancelled") return { text: "Cancelled", cls: "bg-destructive/15 text-destructive" };
+    return { text: s.status, cls: "bg-muted text-muted-foreground" };
+  };
+  if (businesses.length === 0) return <p className="p-6 text-center text-sm text-muted-foreground">No rows.</p>;
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b border-border text-left">
+          {["name", "trade", "country", "billing", "created_at"].map((c) => (
+            <th key={c} className="px-4 py-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{c}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {businesses.map((r) => {
+          const badge = labelFor(subMap.get(r.id));
+          return (
+            <tr key={r.id} className="border-b border-border/60">
+              <td className="px-4 py-2.5 text-foreground/90">{r.name ?? "—"}</td>
+              <td className="px-4 py-2.5 text-foreground/90">{r.trade ?? "—"}</td>
+              <td className="px-4 py-2.5 text-foreground/90">{r.country ?? "—"}</td>
+              <td className="px-4 py-2.5">
+                <span className={`inline-flex rounded-full px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest ${badge.cls}`}>{badge.text}</span>
+              </td>
+              <td className="px-4 py-2.5 text-foreground/90">{r.created_at ? new Date(r.created_at).toLocaleDateString() : "—"}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
