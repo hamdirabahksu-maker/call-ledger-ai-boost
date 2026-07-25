@@ -54,7 +54,7 @@ function Dashboard() {
       if (!biz) { navigate({ to: "/onboarding" }); return; }
       setBusiness(biz as Business);
 
-      await seed({ data: { businessId: biz.id } }).catch(() => {});
+
 
       const [{ data: l }, { data: c }, { data: b }, { data: s }, { data: u }] = await Promise.all([
         supabase.from("leads").select("*").eq("business_id", biz.id).order("created_at", { ascending: false }).limit(10),
