@@ -86,7 +86,7 @@ function Dashboard() {
     } catch { toast.error("SMS failed"); }
   };
 
-  const signOut = async () => { await supabase.auth.signOut(); navigate({ to: "/" }); };
+  
 
   const startCheckout = async (plan: "pilot" | "starter" | "growth") => {
     if (!business) return;
