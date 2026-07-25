@@ -25,7 +25,9 @@ function SettingsPage() {
   const saveFn = useServerFn(updateBusinessSettings);
   const twilioFn = useServerFn(getTwilioStatus);
   const stripeFn = useServerFn(getStripeStatus);
+  const checkoutFn = useServerFn(createCheckoutSession);
   const [biz, setBiz] = useState<Biz | null>(null);
+  const [sub, setSub] = useState<Sub>(null);
   const [twilioOk, setTwilioOk] = useState<boolean | null>(null);
   const [stripeOk, setStripeOk] = useState<boolean | null>(null);
 
@@ -33,10 +35,23 @@ function SettingsPage() {
     (async () => {
       const { data } = await supabase.from("businesses").select("id, name, phone, service_area, google_review_url, after_hours_message, booking_enabled, booking_slug, slot_minutes, buffer_minutes, timezone").maybeSingle();
       setBiz(data as Biz);
+      if (data?.id) {
+        const { data: s } = await supabase.from("subscriptions").select("plan,status,current_period_end").eq("business_id", data.id).maybeSingle();
+        setSub(s as Sub);
+      }
       twilioFn().then((s) => setTwilioOk(s.twilioConfigured)).catch(() => setTwilioOk(false));
       stripeFn().then((s) => setStripeOk(s.configured)).catch(() => setStripeOk(false));
     })();
   }, [twilioFn, stripeFn]);
+
+  const startCheckout = async (plan: "pilot" | "starter" | "growth") => {
+    if (!biz) return;
+    try {
+      const res = await checkoutFn({ data: { plan, businessId: biz.id } });
+      if (!res.configured) { toast.error("Stripe not connected — add STRIPE_SECRET_KEY."); return; }
+      window.location.href = res.url;
+    } catch { toast.error("Couldn't start checkout"); }
+  };
 
   const save = async () => {
     if (!biz) return;
