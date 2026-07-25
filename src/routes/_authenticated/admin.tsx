@@ -102,11 +102,7 @@ function Admin() {
 
 
         <Section title="Businesses" sub={`${data.businesses.length} shops`}>
-          <Table
-            cols={["name", "trade", "phone", "service_area", "created_at"]}
-            rows={data.businesses}
-            format={{ created_at: (v) => new Date(v).toLocaleDateString() }}
-          />
+          <BusinessesTable businesses={data.businesses} subscriptions={data.subscriptions} />
         </Section>
 
         <Section title="Subscriptions">
