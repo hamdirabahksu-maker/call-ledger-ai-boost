@@ -4,7 +4,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
-import { seedDashboardIfEmpty } from "@/lib/dashboard.functions";
+
 import { createCheckoutSession } from "@/lib/checkout.functions";
 import { getTwilioStatus, sendSms } from "@/lib/sms.functions";
 import { updateBookingStatus } from "@/lib/bookings.functions";
