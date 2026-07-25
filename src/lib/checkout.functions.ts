@@ -9,6 +9,12 @@ const PLAN_META: Record<Plan, { name: string; amount: number }> = {
   growth: { name: "CallLedger Growth", amount: 19900 },
 };
 
+function resolveAppOrigin() {
+  const raw = (process.env.APP_URL || process.env.VITE_APP_URL || "").trim().replace(/\/$/, "");
+  if (raw && /^https:\/\//i.test(raw) && !/localhost|127\.0\.0\.1/i.test(raw)) return raw;
+  return "https://call-ledger-ai-boost.lovable.app";
+}
+
 /**
  * Creates a Stripe Checkout Session for a plan.
  * Returns { configured: false } if STRIPE_SECRET_KEY is missing —
