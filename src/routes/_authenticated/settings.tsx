@@ -19,6 +19,7 @@ type Biz = {
   google_review_url: string | null; after_hours_message: string | null;
   booking_enabled: boolean; booking_slug: string | null; slot_minutes: number; buffer_minutes: number; timezone: string | null;
 };
+type Sub = { plan: string | null; status: string; current_period_end: string | null } | null;
 
 function SettingsPage() {
   const saveFn = useServerFn(updateBusinessSettings);
