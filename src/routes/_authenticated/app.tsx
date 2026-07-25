@@ -76,7 +76,7 @@ function Dashboard() {
       setLoading(false);
       twilioStatus().then((s) => setTwilioConfigured(s.twilioConfigured)).catch(() => setTwilioConfigured(false));
     })();
-  }, [navigate, seed, twilioStatus]);
+  }, [navigate, twilioStatus]);
 
   const smsLead = async (lead: Lead) => {
     if (!lead.phone) { toast.error("No phone on this lead"); return; }
