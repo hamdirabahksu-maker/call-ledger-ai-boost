@@ -41,7 +41,7 @@ function Dashboard() {
   const [twilioConfigured, setTwilioConfigured] = useState<boolean | null>(null);
   const navigate = useNavigate();
   const { plan: resumePlan, checkout: checkoutStatus } = Route.useSearch();
-  const seed = useServerFn(seedDashboardIfEmpty);
+  
   const checkout = useServerFn(createCheckoutSession);
   const twilioStatus = useServerFn(getTwilioStatus);
   const updateBookingStatusFn = useServerFn(updateBookingStatus);
