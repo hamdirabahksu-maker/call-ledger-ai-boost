@@ -6,8 +6,8 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import { updateBusinessSettings } from "@/lib/business.functions";
 import { getTwilioStatus } from "@/lib/sms.functions";
-import { getStripeStatus } from "@/lib/checkout.functions";
-import { Copy, ShieldAlert, CreditCard, MessageSquare } from "lucide-react";
+import { getStripeStatus, createCheckoutSession } from "@/lib/checkout.functions";
+import { Copy, CreditCard, MessageSquare } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — CallLedger" }, { name: "robots", content: "noindex" }] }),
