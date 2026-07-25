@@ -152,9 +152,10 @@ function Dashboard() {
                 <ShieldAlert className="h-3.5 w-3.5" /> Admin
               </Link>
             )}
-            <Link to="/onboarding" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground">
+            <Link to="/settings" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground">
               <Settings className="h-4 w-4" />
             </Link>
+
             <button onClick={signOut} className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground">
               <LogOut className="h-3.5 w-3.5" /> Sign out
             </button>
