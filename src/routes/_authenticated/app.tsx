@@ -11,7 +11,7 @@ import { updateBookingStatus } from "@/lib/bookings.functions";
 import { AppShell } from "@/components/app-shell";
 import {
   PhoneMissed, Phone, MessageSquare, Star, Calendar, DollarSign,
-  Clock, Send, TrendingUp, Lock, ShieldAlert, FileText, Plus,
+  Clock, Send, TrendingUp, Lock, ShieldAlert, Plus,
   Link2, Check, X,
 } from "lucide-react";
 
