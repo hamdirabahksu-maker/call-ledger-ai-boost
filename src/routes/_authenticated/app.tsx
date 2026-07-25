@@ -56,23 +56,16 @@ function Dashboard() {
 
 
 
-      const [{ data: l }, { data: c }, { data: b }, { data: s }, { data: u }] = await Promise.all([
+      const [{ data: l }, { data: c }, { data: b }, { data: s }] = await Promise.all([
         supabase.from("leads").select("*").eq("business_id", biz.id).order("created_at", { ascending: false }).limit(10),
         supabase.from("calls").select("*").eq("business_id", biz.id).order("created_at", { ascending: false }).limit(10),
         supabase.from("bookings").select("*").eq("business_id", biz.id).order("starts_at", { ascending: true }).limit(10),
         supabase.from("subscriptions").select("plan,status").eq("business_id", biz.id).maybeSingle(),
-        supabase.auth.getUser(),
       ]);
       setLeads((l ?? []) as Lead[]);
       setCalls((c ?? []) as Call[]);
       setBookings((b ?? []) as Booking[]);
       setSub(s as Sub);
-
-      if (u?.user) {
-        const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", u.user.id);
-        const admin = roles?.some((r) => r.role === "admin") || u.user.email === "hamdi.rabahksu@gmail.com";
-        setIsAdmin(!!admin);
-      }
       setLoading(false);
       twilioStatus().then((s) => setTwilioConfigured(s.twilioConfigured)).catch(() => setTwilioConfigured(false));
     })();
