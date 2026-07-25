@@ -233,8 +233,8 @@ function Dashboard() {
           <section className="rounded-lg border border-border bg-card">
             <SectionHeader icon={Send} title="Quick actions" />
             <div className="space-y-2 p-4">
-              <QuickAction icon={Send} title="Send estimate SMS" body="Follow up on open quotes." onClick={() => toast.success("Estimate SMS queued")} />
-              <QuickAction icon={Star} title="Ask for a review" body="Text a Google review link to recent jobs." onClick={() => toast.success("Review asks queued")} />
+              <QuickActionLink icon={Send} title="Send estimate" body="Open estimates and follow up on open quotes." to="/estimates" />
+              <QuickActionLink icon={Star} title="Ask for a review" body="Send a Google review link to recent jobs." to="/reviews" />
               <QuickAction icon={MessageSquare} title="Broadcast a message" body="Notify booked customers of schedule changes." onClick={() => toast.info("Broadcast composer — coming soon")} />
             </div>
           </section>
