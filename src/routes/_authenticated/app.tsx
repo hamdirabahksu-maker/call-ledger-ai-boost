@@ -8,9 +8,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { createCheckoutSession } from "@/lib/checkout.functions";
 import { getTwilioStatus, sendSms } from "@/lib/sms.functions";
 import { updateBookingStatus } from "@/lib/bookings.functions";
+import { AppShell } from "@/components/app-shell";
 import {
-  Zap, PhoneMissed, Phone, MessageSquare, Star, Calendar, DollarSign,
-  Clock, MapPin, Send, LogOut, Settings, TrendingUp, Lock, ShieldAlert, Sparkles,
+  PhoneMissed, Phone, MessageSquare, Star, Calendar, DollarSign,
+  Clock, Send, TrendingUp, Lock, ShieldAlert, Plus,
   Link2, Check, X,
 } from "lucide-react";
 
@@ -36,7 +37,6 @@ function Dashboard() {
   const [calls, setCalls] = useState<Call[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [sub, setSub] = useState<Sub>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [twilioConfigured, setTwilioConfigured] = useState<boolean | null>(null);
   const navigate = useNavigate();
@@ -56,23 +56,16 @@ function Dashboard() {
 
 
 
-      const [{ data: l }, { data: c }, { data: b }, { data: s }, { data: u }] = await Promise.all([
+      const [{ data: l }, { data: c }, { data: b }, { data: s }] = await Promise.all([
         supabase.from("leads").select("*").eq("business_id", biz.id).order("created_at", { ascending: false }).limit(10),
         supabase.from("calls").select("*").eq("business_id", biz.id).order("created_at", { ascending: false }).limit(10),
         supabase.from("bookings").select("*").eq("business_id", biz.id).order("starts_at", { ascending: true }).limit(10),
         supabase.from("subscriptions").select("plan,status").eq("business_id", biz.id).maybeSingle(),
-        supabase.auth.getUser(),
       ]);
       setLeads((l ?? []) as Lead[]);
       setCalls((c ?? []) as Call[]);
       setBookings((b ?? []) as Booking[]);
       setSub(s as Sub);
-
-      if (u?.user) {
-        const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", u.user.id);
-        const admin = roles?.some((r) => r.role === "admin") || u.user.email === "hamdi.rabahksu@gmail.com";
-        setIsAdmin(!!admin);
-      }
       setLoading(false);
       twilioStatus().then((s) => setTwilioConfigured(s.twilioConfigured)).catch(() => setTwilioConfigured(false));
     })();
@@ -93,7 +86,7 @@ function Dashboard() {
     } catch { toast.error("SMS failed"); }
   };
 
-  const signOut = async () => { await supabase.auth.signOut(); navigate({ to: "/" }); };
+  
 
   const startCheckout = async (plan: "pilot" | "starter" | "growth") => {
     if (!business) return;
@@ -147,79 +140,49 @@ function Dashboard() {
   const responseRate = Math.round((calls.filter((c) => c.recovered).length / totalCalls) * 100);
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="grid h-7 w-7 place-items-center rounded-sm bg-primary text-primary-foreground">
-              <Zap className="h-4 w-4" strokeWidth={2.5} />
-            </div>
-            <span className="font-display text-lg">CALL<span className="text-primary">LEDGER</span></span>
-            <span className="ml-3 hidden text-xs text-muted-foreground sm:inline">/ {business?.name}</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Link to="/marketing" className="hidden items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground hover:border-primary hover:text-primary sm:inline-flex">
-              <Sparkles className="h-3.5 w-3.5" /> AI Marketing
-            </Link>
-            {isAdmin && (
-              <Link to="/admin" className="hidden items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary sm:inline-flex">
-                <ShieldAlert className="h-3.5 w-3.5" /> Admin
-              </Link>
-            )}
-            <Link to="/settings" className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground">
-              <Settings className="h-4 w-4" />
-            </Link>
-
-            <button onClick={signOut} className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground">
-              <LogOut className="h-3.5 w-3.5" /> Sign out
-            </button>
-          </div>
-
-        </div>
-      </header>
-
+    <AppShell subtitle={`Today · ${new Date().toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}`} title={business?.name ?? "Dashboard"}>
       {!isPaid && (
-        <div className="border-b border-primary/30 bg-primary/10">
-          <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2 text-sm">
-              <Lock className="h-4 w-4 text-primary" />
-              <span className="text-foreground"><span className="font-semibold">Preview mode.</span> Start the $49 pilot to unlock live SMS recovery.</span>
-            </div>
-            <div className="flex gap-2">
-              <button onClick={() => startCheckout("pilot")} className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:brightness-110">Start pilot — $49</button>
-              <button onClick={() => startCheckout("starter")} className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-accent">Starter $99</button>
-              <button onClick={() => startCheckout("growth")} className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-accent">Growth $199</button>
-            </div>
+        <div className="mb-6 flex flex-col gap-3 rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2 text-sm">
+            <Lock className="h-4 w-4 text-primary" />
+            <span className="text-foreground"><span className="font-semibold">Preview mode.</span> Start the $49 pilot to unlock live SMS recovery.</span>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => startCheckout("pilot")} className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:brightness-110">Start pilot — $49</button>
+            <button onClick={() => startCheckout("starter")} className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-accent">Starter $99</button>
+            <button onClick={() => startCheckout("growth")} className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-accent">Growth $199</button>
           </div>
         </div>
       )}
 
-      {twilioConfigured === false && (
-        <div className="border-b border-yellow-500/30 bg-yellow-500/10">
-          <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2.5 text-sm">
-            <ShieldAlert className="h-4 w-4 text-yellow-500" />
-            <span className="text-foreground">
-              <span className="font-semibold">Connect Twilio</span> to send real SMS — add{" "}
-              <code className="rounded bg-background/60 px-1 font-mono text-xs">TWILIO_ACCOUNT_SID</code>,{" "}
-              <code className="rounded bg-background/60 px-1 font-mono text-xs">TWILIO_AUTH_TOKEN</code>, and{" "}
-              <code className="rounded bg-background/60 px-1 font-mono text-xs">TWILIO_PHONE_NUMBER</code> in Project Settings → Secrets.
-            </span>
-          </div>
+      {isPaid && twilioConfigured === false && (
+        <div className="mb-6 flex items-start gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-4 py-2.5 text-sm">
+          <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-yellow-500" />
+          <span className="text-foreground">
+            <span className="font-semibold">Connect Twilio</span> to send real SMS — add{" "}
+            <code className="rounded bg-background/60 px-1 font-mono text-xs">TWILIO_ACCOUNT_SID</code>,{" "}
+            <code className="rounded bg-background/60 px-1 font-mono text-xs">TWILIO_AUTH_TOKEN</code>, and{" "}
+            <code className="rounded bg-background/60 px-1 font-mono text-xs">TWILIO_PHONE_NUMBER</code> in Project Settings → Secrets.
+          </span>
         </div>
       )}
 
-      <main className="mx-auto max-w-7xl px-4 py-8">
+      <div>
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">Today · {new Date().toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}</p>
-            <h1 className="mt-2 font-display text-4xl">{leads.length} new leads. {calls.filter((c) => c.recovered).length} recovered overnight.</h1>
-            <p className="mt-1 text-muted-foreground">Nice — you slept while CallLedger worked.</p>
+            <h2 className="font-display text-2xl">{leads.length} leads · {calls.filter((c) => c.recovered).length} recovered</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Real activity from your business. Empty states are real too.</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Link to="/bookings" className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:brightness-110"><Plus className="h-3.5 w-3.5" /> New booking</Link>
+              <Link to="/estimates" className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20"><Plus className="h-3.5 w-3.5" /> New estimate</Link>
+            </div>
           </div>
           <div className="flex gap-2">
             <StatPill icon={DollarSign} label="Pipeline value" value={`$${recovered.toLocaleString()}`} tone="amber" />
             <StatPill icon={TrendingUp} label="Response rate" value={`${responseRate}%`} />
           </div>
         </div>
+
 
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
           <section className="lg:col-span-2 rounded-lg border border-border bg-card">
@@ -244,7 +207,13 @@ function Dashboard() {
                   <div className="flex items-center gap-3 sm:flex-col sm:items-end">
                     <p className="font-display text-lg text-primary">${(l.estimated_value ?? 0).toLocaleString()}</p>
                     <div className="flex gap-1.5">
-                      <ActionButton icon={Phone} onClick={() => toast.success(`Calling ${l.name}...`)}>Call</ActionButton>
+                      {l.phone ? (
+                        <a href={`tel:${l.phone}`} className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background/50 px-2.5 py-1.5 text-xs font-medium text-foreground hover:border-primary hover:bg-primary/10 hover:text-primary">
+                          <Phone className="h-3 w-3" /> Call
+                        </a>
+                      ) : (
+                        <ActionButton icon={Phone} onClick={() => toast.error("No phone on this lead")}>Call</ActionButton>
+                      )}
                       <ActionButton icon={MessageSquare} onClick={() => smsLead(l)}>SMS</ActionButton>
                     </div>
                   </div>
@@ -256,8 +225,8 @@ function Dashboard() {
           <section className="rounded-lg border border-border bg-card">
             <SectionHeader icon={Send} title="Quick actions" />
             <div className="space-y-2 p-4">
-              <QuickAction icon={Send} title="Send estimate SMS" body="Follow up on open quotes." onClick={() => toast.success("Estimate SMS queued")} />
-              <QuickAction icon={Star} title="Ask for a review" body="Text a Google review link to recent jobs." onClick={() => toast.success("Review asks queued")} />
+              <QuickActionLink icon={Send} title="Send estimate" body="Open estimates and follow up on open quotes." to="/estimates" />
+              <QuickActionLink icon={Star} title="Ask for a review" body="Send a Google review link to recent jobs." to="/reviews" />
               <QuickAction icon={MessageSquare} title="Broadcast a message" body="Notify booked customers of schedule changes." onClick={() => toast.info("Broadcast composer — coming soon")} />
             </div>
           </section>
@@ -342,8 +311,8 @@ function Dashboard() {
             </ul>
           </section>
         </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }
 
@@ -390,6 +359,20 @@ function QuickAction({ icon: Icon, title, body, onClick }: { icon: React.Compone
         <p className="mt-0.5 text-xs text-muted-foreground">{body}</p>
       </div>
     </button>
+  );
+}
+
+function QuickActionLink({ icon: Icon, title, body, to }: { icon: React.ComponentType<{ className?: string }>; title: string; body: string; to: string }) {
+  return (
+    <Link to={to} className="group flex w-full items-start gap-3 rounded-md border border-border bg-background/30 p-3 text-left transition hover:border-primary/60 hover:bg-primary/5">
+      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-primary/10 text-primary">
+        <Icon className="h-4 w-4" />
+      </div>
+      <div>
+        <p className="font-semibold text-foreground">{title}</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">{body}</p>
+      </div>
+    </Link>
   );
 }
 

@@ -6,8 +6,8 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import { updateBusinessSettings } from "@/lib/business.functions";
 import { getTwilioStatus } from "@/lib/sms.functions";
-import { getStripeStatus } from "@/lib/checkout.functions";
-import { Copy, ShieldAlert, CreditCard, MessageSquare } from "lucide-react";
+import { getStripeStatus, createCheckoutSession } from "@/lib/checkout.functions";
+import { Copy, CreditCard, MessageSquare } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — CallLedger" }, { name: "robots", content: "noindex" }] }),
@@ -19,12 +19,15 @@ type Biz = {
   google_review_url: string | null; after_hours_message: string | null;
   booking_enabled: boolean; booking_slug: string | null; slot_minutes: number; buffer_minutes: number; timezone: string | null;
 };
+type Sub = { plan: string | null; status: string; current_period_end: string | null } | null;
 
 function SettingsPage() {
   const saveFn = useServerFn(updateBusinessSettings);
   const twilioFn = useServerFn(getTwilioStatus);
   const stripeFn = useServerFn(getStripeStatus);
+  const checkoutFn = useServerFn(createCheckoutSession);
   const [biz, setBiz] = useState<Biz | null>(null);
+  const [sub, setSub] = useState<Sub>(null);
   const [twilioOk, setTwilioOk] = useState<boolean | null>(null);
   const [stripeOk, setStripeOk] = useState<boolean | null>(null);
 
@@ -32,10 +35,23 @@ function SettingsPage() {
     (async () => {
       const { data } = await supabase.from("businesses").select("id, name, phone, service_area, google_review_url, after_hours_message, booking_enabled, booking_slug, slot_minutes, buffer_minutes, timezone").maybeSingle();
       setBiz(data as Biz);
+      if (data?.id) {
+        const { data: s } = await supabase.from("subscriptions").select("plan,status,current_period_end").eq("business_id", data.id).maybeSingle();
+        setSub(s as Sub);
+      }
       twilioFn().then((s) => setTwilioOk(s.twilioConfigured)).catch(() => setTwilioOk(false));
       stripeFn().then((s) => setStripeOk(s.configured)).catch(() => setStripeOk(false));
     })();
   }, [twilioFn, stripeFn]);
+
+  const startCheckout = async (plan: "pilot" | "starter" | "growth") => {
+    if (!biz) return;
+    try {
+      const res = await checkoutFn({ data: { plan, businessId: biz.id } });
+      if (!res.configured) { toast.error("Stripe not connected — add STRIPE_SECRET_KEY."); return; }
+      window.location.href = res.url;
+    } catch { toast.error("Couldn't start checkout"); }
+  };
 
   const save = async () => {
     if (!biz) return;
@@ -64,6 +80,41 @@ function SettingsPage() {
             <Field label="Timezone" value={biz.timezone ?? ""} onChange={(v) => setBiz({ ...biz, timezone: v })} />
           </div>
           <Field label="Service area" value={biz.service_area ?? ""} onChange={(v) => setBiz({ ...biz, service_area: v })} />
+        </Section>
+
+        <Section title="Billing">
+          {(() => {
+            const paid = sub?.status === "active" || sub?.status === "trialing";
+            const pastDue = sub?.status === "past_due" || sub?.status === "unpaid";
+            const label = paid ? `Paid · ${sub?.plan ?? "—"}` : pastDue ? "Past due" : "Unpaid";
+            const cls = paid ? "bg-primary/15 text-primary" : pastDue ? "bg-yellow-500/15 text-yellow-500" : "bg-muted text-muted-foreground";
+            return (
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <CreditCard className="h-4 w-4 text-primary" />
+                  <div className="flex-1">
+                    <p className="text-sm">
+                      Current plan:{" "}
+                      <span className={`ml-1 inline-flex rounded-full px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest ${cls}`}>{label}</span>
+                    </p>
+                    {sub?.current_period_end && (
+                      <p className="mt-0.5 text-xs text-muted-foreground">Renews {new Date(sub.current_period_end).toLocaleDateString()}</p>
+                    )}
+                  </div>
+                </div>
+                {stripeOk === false && (
+                  <p className="rounded-md border border-yellow-500/30 bg-yellow-500/5 p-2 text-xs text-yellow-100/80">
+                    Stripe isn't connected on this project yet. Add <code className="font-mono">STRIPE_SECRET_KEY</code> to enable checkout.
+                  </p>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={() => startCheckout("pilot")} disabled={stripeOk === false} className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:brightness-110 disabled:opacity-50">{paid ? "Switch to Pilot" : "Start pilot — $49"}</button>
+                  <button onClick={() => startCheckout("starter")} disabled={stripeOk === false} className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-accent disabled:opacity-50">Starter $99</button>
+                  <button onClick={() => startCheckout("growth")} disabled={stripeOk === false} className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-accent disabled:opacity-50">Growth $199</button>
+                </div>
+              </div>
+            );
+          })()}
         </Section>
 
         <Section title="Booking">
