@@ -7,6 +7,7 @@ export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
     const { data } = await supabase.auth.getSession();
     if (!data.session) throw redirect({ to: "/auth" });
+    if (!data.session.user.email_confirmed_at) throw redirect({ to: "/confirm-email" });
   },
   component: Layout,
 });
@@ -17,6 +18,7 @@ function Layout() {
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       if (!session) navigate({ to: "/auth" });
+      else if (!session.user.email_confirmed_at) navigate({ to: "/confirm-email" });
     });
     setReady(true);
     return () => sub.subscription.unsubscribe();
