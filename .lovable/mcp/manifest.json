@@ -1,0 +1,245 @@
+{
+  "version": 1,
+  "sdk_version": "0.24.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://cudtooednbqngigdlifp.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "callledger-mcp",
+      "version": "0.1.0",
+      "title": "CallLedger"
+    },
+    "tools": [
+      {
+        "name": "business_summary",
+        "title": "Business summary",
+        "description": "Return the signed-in business profile plus counts of leads, missed calls and upcoming bookings.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_leads",
+        "title": "List leads",
+        "description": "List the signed-in business's leads, newest first. Optionally filter by status.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "description": "Filter by lead status, e.g. new, contacted, booked, lost."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Maximum number of leads to return (default 20, max 100)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_lead",
+        "title": "Create lead",
+        "description": "Create a new lead for the signed-in business (e.g. from a missed call or inbound message).",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Caller or customer name."
+            },
+            "phone": {
+              "type": "string",
+              "description": "Phone number in E.164 form when known."
+            },
+            "issue": {
+              "type": "string",
+              "description": "What the customer needs, in one sentence."
+            },
+            "urgency": {
+              "type": "string",
+              "enum": [
+                "high",
+                "med",
+                "low"
+              ],
+              "description": "How urgent the job is."
+            },
+            "estimated_value": {
+              "type": "number",
+              "description": "Estimated job value in your currency."
+            },
+            "source": {
+              "type": "string",
+              "description": "Where the lead came from, e.g. missed_call, sms, web."
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_bookings",
+        "title": "List bookings",
+        "description": "List the signed-in business's bookings, soonest first. Defaults to upcoming bookings only.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "include_past": {
+              "type": "boolean",
+              "description": "Include bookings that already started."
+            },
+            "status": {
+              "type": "string",
+              "description": "Filter by status, e.g. pending, confirmed, completed, cancelled."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Maximum bookings to return (default 20, max 100)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_booking",
+        "title": "Create booking",
+        "description": "Book a job on the signed-in business's calendar. For clinics this is administrative scheduling only — never medical advice.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "customer_name": {
+              "type": "string",
+              "description": "Customer name."
+            },
+            "starts_at": {
+              "type": "string",
+              "description": "Start time as an ISO 8601 timestamp, e.g. 2026-08-02T14:00:00Z."
+            },
+            "phone": {
+              "type": "string",
+              "description": "Customer phone number."
+            },
+            "email": {
+              "type": "string",
+              "description": "Customer email."
+            },
+            "job": {
+              "type": "string",
+              "description": "Short job description."
+            },
+            "notes": {
+              "type": "string",
+              "description": "Extra notes for the visit."
+            },
+            "duration_minutes": {
+              "type": "integer",
+              "description": "Job length in minutes; defaults to the business slot length."
+            }
+          },
+          "required": [
+            "customer_name",
+            "starts_at"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_customers",
+        "title": "List customers",
+        "description": "List or search the signed-in business's customer records.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "search": {
+              "type": "string",
+              "description": "Match against customer name."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Maximum customers to return (default 20, max 100)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_missed_calls",
+        "title": "List missed calls",
+        "description": "List logged missed calls for the signed-in business, newest first, with recovery status.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "recovered": {
+              "type": "boolean",
+              "description": "Filter to recovered (true) or not-yet-recovered (false) calls."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Maximum calls to return (default 20, max 100)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

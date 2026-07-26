@@ -9,6 +9,7 @@ import { BrandLockup } from "@/components/brand-lockup";
 const searchSchema = z.object({
   mode: z.enum(["signup", "login", "forgot"]).catch("login"),
   plan: z.enum(["pilot", "starter", "growth"]).optional(),
+  next: z.string().optional(),
 });
 
 export const Route = createFileRoute("/auth")({
@@ -32,7 +33,10 @@ const PROVIDERS: { id: Provider; label: string; icon: string }[] = [
 ];
 
 function AuthPage() {
-  const { mode: initialMode, plan } = Route.useSearch();
+  const { mode: initialMode, plan, next } = Route.useSearch();
+  // Only same-origin relative paths may be used as a post-auth return target.
+  const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
+  const returnUrl = safeNext ? window.location.origin + safeNext : window.location.origin + "/app";
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState("");
@@ -47,6 +51,7 @@ function AuthPage() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
+        if (safeNext) { window.location.href = safeNext; return; }
         navigate(plan ? { to: "/app", search: { plan } } as any : { to: "/app" });
       }
     });
@@ -54,6 +59,7 @@ function AuthPage() {
   }, []);
 
   const afterAuthRedirect = async () => {
+    if (safeNext) { window.location.href = safeNext; return; }
     // Detect if onboarding is needed
     const { data: biz } = await supabase.from("businesses").select("id").maybeSingle();
     if (!biz) {
@@ -92,7 +98,7 @@ function AuthPage() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin + "/app" },
+          options: { emailRedirectTo: returnUrl },
         });
         if (error) throw error;
         const { data } = await supabase.auth.getSession();
@@ -121,7 +127,7 @@ function AuthPage() {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
-        options: { redirectTo: window.location.origin + "/app" },
+        options: { redirectTo: returnUrl },
       });
       if (error) {
         const msg = error.message?.toLowerCase() ?? "";
