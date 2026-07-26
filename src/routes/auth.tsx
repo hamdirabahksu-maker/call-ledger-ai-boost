@@ -59,6 +59,7 @@ function AuthPage() {
   }, []);
 
   const afterAuthRedirect = async () => {
+    if (safeNext) { window.location.href = safeNext; return; }
     // Detect if onboarding is needed
     const { data: biz } = await supabase.from("businesses").select("id").maybeSingle();
     if (!biz) {
@@ -97,7 +98,7 @@ function AuthPage() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin + "/app" },
+          options: { emailRedirectTo: returnUrl },
         });
         if (error) throw error;
         const { data } = await supabase.auth.getSession();
@@ -126,7 +127,7 @@ function AuthPage() {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
-        options: { redirectTo: window.location.origin + "/app" },
+        options: { redirectTo: returnUrl },
       });
       if (error) {
         const msg = error.message?.toLowerCase() ?? "";
