@@ -39,6 +39,7 @@ function SettingsPage() {
   const [sub, setSub] = useState<Sub>(null);
   const [twilioOk, setTwilioOk] = useState<boolean | null>(null);
   const [stripeOk, setStripeOk] = useState<boolean | null>(null);
+  const [tab, setTab] = useState<Tab>("business");
 
   useEffect(() => {
     (async () => {
