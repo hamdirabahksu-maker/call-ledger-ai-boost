@@ -89,7 +89,7 @@ function Nav() {
           <Link
             to="/auth"
             search={{ mode: "signup" }}
-            className="inline-flex items-center gap-1.5 rounded-full bg-amber-400 px-4 py-1.5 text-sm font-semibold text-black transition hover:bg-amber-300"
+            className="inline-flex items-center gap-1.5 press rounded-full bg-amber-400 px-4 py-1.5 text-sm font-semibold text-black hover:bg-amber-300"
           >
             Get started
             <ArrowRight className="h-3.5 w-3.5" />
@@ -120,7 +120,7 @@ function Hero() {
 
       <div className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col items-center justify-center px-4 pb-24 pt-40 text-center">
         <p
-          className="mb-8 inline-flex animate-fade-in items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 font-mono text-[11px] uppercase tracking-[0.22em] text-amber-300 backdrop-blur"
+          className="mb-8 inline-flex animate-rise items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 font-mono text-[11px] uppercase tracking-[0.22em] text-amber-300 backdrop-blur"
           style={{ animationDelay: "0ms" }}
         >
           <span className="h-1.5 w-1.5 rounded-full bg-amber-400 shadow-[0_0_10px_2px_rgba(245,165,36,0.6)]" />
@@ -128,8 +128,8 @@ function Hero() {
         </p>
 
         <h1
-          className="animate-fade-in font-display text-[clamp(2.8rem,8vw,6.5rem)] font-bold leading-[0.95] tracking-tight text-balance"
-          style={{ animationDelay: "80ms" }}
+          className="animate-rise font-display text-[clamp(2.8rem,8vw,6.5rem)] font-bold leading-[0.95] tracking-tight text-balance"
+          style={{ animationDelay: "60ms" }}
         >
           Never miss the call
           <br />
@@ -139,21 +139,21 @@ function Hero() {
         </h1>
 
         <p
-          className="mx-auto mt-8 max-w-xl animate-fade-in text-lg leading-relaxed text-white/60 text-balance"
-          style={{ animationDelay: "180ms" }}
+          className="mx-auto mt-8 max-w-xl animate-rise text-lg leading-relaxed text-white/60 text-balance"
+          style={{ animationDelay: "120ms" }}
         >
           CallLedger picks up missed calls, books jobs by SMS, sends estimates and invoices,
           and asks for the review — while you're on the tools.
         </p>
 
         <div
-          className="mt-10 flex animate-fade-in flex-col items-center gap-3 sm:flex-row"
-          style={{ animationDelay: "280ms" }}
+          className="mt-10 flex animate-rise flex-col items-center gap-3 sm:flex-row"
+          style={{ animationDelay: "180ms" }}
         >
           <Link
             to="/auth"
             search={{ mode: "signup", plan: "pilot" } as any}
-            className="group inline-flex items-center gap-2 rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-black transition hover:bg-amber-300"
+            className="group inline-flex items-center gap-2 press rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-black hover:bg-amber-300"
           >
             Start 30-day pilot · $49
             <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
@@ -167,7 +167,7 @@ function Hero() {
         </div>
 
         <p
-          className="mt-14 animate-fade-in font-mono text-[10px] uppercase tracking-[0.3em] text-white/30"
+          className="mt-14 animate-rise font-mono text-[10px] uppercase tracking-[0.3em] text-white/30"
           style={{ animationDelay: "380ms" }}
         >
           Trusted by service operators in 20+ countries · English-first
