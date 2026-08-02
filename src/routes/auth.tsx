@@ -79,7 +79,7 @@ function AuthPage() {
           redirectTo: window.location.origin + "/reset-password",
         });
         if (error) throw error;
-        toast.success("Password reset email sent. Check your inbox.");
+        toast.success("Reset email sent. Check your inbox and spam — use the newest link, it expires fast.");
         setMode("login");
       } catch (err) {
         toast.error(err instanceof Error ? err.message : "Failed to send reset email");
@@ -154,7 +154,7 @@ function AuthPage() {
   const subCopy: Record<Mode, string> = {
     signup: "30-day pilot for $49. No card required to create your account.",
     login: "Welcome back. Let's check your bookings.",
-    forgot: "Enter your email and we'll send you a reset link.",
+    forgot: "Enter your email and we'll send a reset link. Check spam, and use the newest link — they expire quickly.",
   };
 
   return (
