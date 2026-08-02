@@ -7,7 +7,16 @@ import { AppShell } from "@/components/app-shell";
 import { updateBusinessSettings } from "@/lib/business.functions";
 import { getTwilioStatus } from "@/lib/sms.functions";
 import { getStripeStatus, createCheckoutSession } from "@/lib/checkout.functions";
+import { PillTabs } from "@/components/pill-tabs";
 import { Copy, CreditCard, MessageSquare } from "lucide-react";
+
+const TABS = [
+  { id: "business", label: "Business" },
+  { id: "booking", label: "Booking" },
+  { id: "billing", label: "Billing" },
+  { id: "notifications", label: "Notifications" },
+] as const;
+type Tab = (typeof TABS)[number]["id"];
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — CallLedger" }, { name: "robots", content: "noindex" }] }),
