@@ -7,7 +7,16 @@ import { AppShell } from "@/components/app-shell";
 import { updateBusinessSettings } from "@/lib/business.functions";
 import { getTwilioStatus } from "@/lib/sms.functions";
 import { getStripeStatus, createCheckoutSession } from "@/lib/checkout.functions";
+import { PillTabs } from "@/components/pill-tabs";
 import { Copy, CreditCard, MessageSquare } from "lucide-react";
+
+const TABS = [
+  { id: "business", label: "Business" },
+  { id: "booking", label: "Booking" },
+  { id: "billing", label: "Billing" },
+  { id: "notifications", label: "Notifications" },
+] as const;
+type Tab = (typeof TABS)[number]["id"];
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — CallLedger" }, { name: "robots", content: "noindex" }] }),
@@ -30,6 +39,7 @@ function SettingsPage() {
   const [sub, setSub] = useState<Sub>(null);
   const [twilioOk, setTwilioOk] = useState<boolean | null>(null);
   const [stripeOk, setStripeOk] = useState<boolean | null>(null);
+  const [tab, setTab] = useState<Tab>("business");
 
   useEffect(() => {
     (async () => {
@@ -72,7 +82,11 @@ function SettingsPage() {
 
   return (
     <AppShell subtitle="Configuration" title="Settings">
-      <div className="grid gap-6 max-w-3xl">
+      <div className="grid max-w-3xl gap-5">
+        <PillTabs tabs={TABS} value={tab} onChange={setTab} />
+
+        {tab === "business" && (
+        <div key="business" className="grid gap-5 animate-page-enter">
         <Section title="Business">
           <Field label="Business name" value={biz.name} onChange={(v) => setBiz({ ...biz, name: v })} />
           <div className="grid gap-3 sm:grid-cols-2">
@@ -81,7 +95,11 @@ function SettingsPage() {
           </div>
           <Field label="Service area" value={biz.service_area ?? ""} onChange={(v) => setBiz({ ...biz, service_area: v })} />
         </Section>
+        </div>
+        )}
 
+        {tab === "billing" && (
+        <div key="billing" className="grid gap-5 animate-page-enter">
         <Section title="Billing">
           {(() => {
             const paid = sub?.status === "active" || sub?.status === "trialing";
@@ -108,15 +126,19 @@ function SettingsPage() {
                   </p>
                 )}
                 <div className="flex flex-wrap gap-2">
-                  <button onClick={() => startCheckout("pilot")} disabled={stripeOk === false} className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:brightness-110 disabled:opacity-50">{paid ? "Switch to Pilot" : "Start pilot — $49"}</button>
-                  <button onClick={() => startCheckout("starter")} disabled={stripeOk === false} className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-accent disabled:opacity-50">Starter $99</button>
-                  <button onClick={() => startCheckout("growth")} disabled={stripeOk === false} className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-accent disabled:opacity-50">Growth $199</button>
+                  <button onClick={() => startCheckout("pilot")} disabled={stripeOk === false} className="press rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-50">{paid ? "Switch to Pilot" : "Start pilot — $49"}</button>
+                  <button onClick={() => startCheckout("starter")} disabled={stripeOk === false} className="press rounded-full border border-border px-3.5 py-1.5 text-xs text-foreground hover:bg-accent disabled:opacity-50">Starter $99</button>
+                  <button onClick={() => startCheckout("growth")} disabled={stripeOk === false} className="press rounded-full border border-border px-3.5 py-1.5 text-xs text-foreground hover:bg-accent disabled:opacity-50">Growth $199</button>
                 </div>
               </div>
             );
           })()}
         </Section>
+        </div>
+        )}
 
+        {tab === "booking" && (
+        <div key="booking" className="grid gap-5 animate-page-enter">
         <Section title="Booking">
           <label className="flex items-center gap-3">
             <input type="checkbox" checked={biz.booking_enabled} onChange={(e) => setBiz({ ...biz, booking_enabled: e.target.checked })} />
@@ -125,7 +147,7 @@ function SettingsPage() {
           {bookingUrl && (
             <div className="flex items-center gap-2 rounded-md border border-border bg-background/50 p-2.5">
               <code className="flex-1 truncate font-mono text-xs">{bookingUrl}</code>
-              <button onClick={() => { navigator.clipboard.writeText(bookingUrl); toast.success("Copied"); }} className="inline-flex items-center gap-1 rounded-md border border-primary/40 bg-primary/10 px-2 py-1 text-xs font-semibold text-primary"><Copy className="h-3 w-3" /> Copy</button>
+              <button onClick={() => { navigator.clipboard.writeText(bookingUrl); toast.success("Copied"); }} className="press inline-flex items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary"><Copy className="h-3 w-3" /> Copy</button>
             </div>
           )}
           <div className="grid gap-3 sm:grid-cols-2">
@@ -133,7 +155,11 @@ function SettingsPage() {
             <Field label="Buffer minutes" value={String(biz.buffer_minutes)} onChange={(v) => setBiz({ ...biz, buffer_minutes: Number(v) || 0 })} />
           </div>
         </Section>
+        </div>
+        )}
 
+        {tab === "notifications" && (
+        <div key="notifications" className="grid gap-5 animate-page-enter">
         <Section title="Reviews">
           <Field label="Google review URL" value={biz.google_review_url ?? ""} onChange={(v) => setBiz({ ...biz, google_review_url: v })} placeholder="https://g.page/r/…/review" />
         </Section>
@@ -148,14 +174,17 @@ function SettingsPage() {
             <StatusRow icon={CreditCard} label="Stripe" ok={stripeOk} help="Add STRIPE_SECRET_KEY in Project Settings → Secrets." />
           </div>
         </Section>
+        </div>
+        )}
 
         <div className="flex justify-end">
-          <button onClick={save} className="rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:brightness-110">Save changes</button>
+          <button onClick={save} className="press rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground">Save changes</button>
         </div>
       </div>
     </AppShell>
   );
 }
+
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
