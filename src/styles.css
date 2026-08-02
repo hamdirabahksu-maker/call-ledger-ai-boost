@@ -39,11 +39,17 @@
 
 :root {
   --radius: 0.5rem;
-  /* Dark charcoal industrial base */
-  --background: oklch(0.16 0.01 60);
-  --foreground: oklch(0.96 0.01 80);
-  --card: oklch(0.20 0.012 60);
+  /* Motion tokens (Figma 05 Motion) */
+  --dur-micro: 120ms;
+  --dur-ui: 200ms;
+  --dur-enter: 320ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Near-black charcoal stage */
+  --background: oklch(0.13 0.005 60);
+  --foreground: oklch(0.97 0.008 80);
+  --card: oklch(0.175 0.008 60);
   --card-foreground: oklch(0.96 0.01 80);
+
   --popover: oklch(0.20 0.012 60);
   --popover-foreground: oklch(0.96 0.01 80);
   --primary: oklch(0.78 0.17 65); /* amber */
