@@ -71,7 +71,7 @@ function Marketing() {
     } catch (e: any) {
       const msg = e?.message ?? "";
       if (msg.includes("429")) toast.error("Rate limited — try again in a moment.");
-      else if (msg.includes("402")) toast.error("AI credits exhausted — top up in Lovable settings.");
+      else if (msg.includes("402")) toast.error("AI credits exhausted — set LOVABLE_API_KEY or skip AI drafts.");
       else toast.error("Couldn't generate — " + (msg || "unknown error"));
     } finally { setBusy(null); }
   };
@@ -88,6 +88,9 @@ function Marketing() {
   return (
     <AppShell subtitle="AI Marketing" title="Write in seconds. Ship in one click.">
       <div className="grid max-w-5xl gap-5">
+        <p className="rounded-md border border-border bg-card/50 px-3 py-2 text-xs text-muted-foreground">
+          No mass SMS broadcast in v1 — generate drafts here, then send one-to-one from the dashboard when Twilio is connected.
+        </p>
         <PillTabs tabs={TABS} value={tab} onChange={setTab} />
 
         {medical && (

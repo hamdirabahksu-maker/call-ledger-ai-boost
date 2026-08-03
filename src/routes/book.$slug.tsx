@@ -2,7 +2,8 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useState, useMemo, useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { getPublicBooking, createPublicBooking, computeSlots } from "@/lib/bookings.functions";
-import { Zap, Calendar, Check, MapPin } from "lucide-react";
+import { PublicChrome } from "@/components/public-chrome";
+import { Calendar, Check, MapPin } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/book/$slug")({
@@ -85,7 +86,7 @@ function BookingPage() {
   if (done) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
+        <PublicChrome logoUrl={(business as any)?.logo_url} businessName={business!.name} />
         <main className="mx-auto max-w-lg px-4 py-16 text-center animate-fade-in">
           <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-primary/15 text-primary">
             <Check className="h-7 w-7" />
@@ -103,7 +104,7 @@ function BookingPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <PublicChrome logoUrl={(business as any)?.logo_url} businessName={business!.name} />
       <main className="mx-auto grid max-w-4xl gap-8 px-4 py-10 animate-fade-in lg:grid-cols-[1.1fr_1fr]">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">Book online</p>
@@ -119,7 +120,7 @@ function BookingPage() {
           )}
           <div className="mt-6">
             <label className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">Pick a date</label>
-            <div className="mt-2 flex gap-1 overflow-x-auto pb-2">
+            <div className="mt-2 flex gap-1.5 overflow-x-auto pb-2">
               {Array.from({ length: 14 }).map((_, i) => {
                 const d = todayISO(i);
                 const dd = new Date(d + "T00:00:00");
@@ -127,12 +128,17 @@ function BookingPage() {
                 return (
                   <button
                     key={d}
+                    type="button"
                     onClick={() => setDate(d)}
-                    className={`shrink-0 rounded-md border px-3 py-2 text-center text-xs transition ${
-                      active ? "border-primary bg-primary/15 text-primary" : "border-border bg-card hover:border-primary/60"
+                    className={`press shrink-0 rounded-lg border px-3 py-2 text-center transition ${
+                      active
+                        ? "border-primary/60 bg-primary/15 text-primary"
+                        : "border-border bg-card text-foreground hover:border-primary/50"
                     }`}
                   >
-                    <div className="font-mono uppercase tracking-widest text-[10px]">{dd.toLocaleDateString([], { weekday: "short" })}</div>
+                    <div className="font-mono text-[10px] uppercase tracking-widest opacity-70">
+                      {dd.toLocaleDateString([], { weekday: "short" })}
+                    </div>
                     <div className="font-display text-lg leading-tight">{dd.getDate()}</div>
                   </button>
                 );
@@ -143,16 +149,19 @@ function BookingPage() {
             <label className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">Available slots</label>
             <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
               {slots.length === 0 && (
-                <p className="col-span-full rounded-md border border-border bg-card p-4 text-center text-sm text-muted-foreground">
+                <p className="col-span-full rounded-lg border border-border bg-card p-4 text-center text-sm text-muted-foreground">
                   No slots on this day. Try another date.
                 </p>
               )}
               {slots.map((s) => (
                 <button
                   key={s}
+                  type="button"
                   onClick={() => setSlot(s)}
-                  className={`rounded-md border px-2 py-2 text-sm transition ${
-                    slot === s ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:border-primary/60 hover:text-primary"
+                  className={`press rounded-lg border px-2 py-2.5 text-sm transition ${
+                    slot === s
+                      ? "border-primary bg-primary font-semibold text-primary-foreground"
+                      : "border-border bg-card hover:border-primary/60 hover:text-primary"
                   }`}
                 >
                   {new Date(s).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
@@ -190,26 +199,11 @@ function BookingPage() {
             <Calendar className="h-4 w-4" /> {busy ? "Booking..." : "Confirm booking"}
           </button>
           <p className="text-center text-[11px] text-muted-foreground">
-            Powered by <span className="text-foreground">CALLLEDGER</span>
+            Confirmation by SMS · powered by CallLedger
           </p>
         </form>
       </main>
     </div>
-  );
-}
-
-function Header() {
-  return (
-    <header className="border-b border-border">
-      <div className="mx-auto flex h-14 max-w-4xl items-center px-4">
-        <div className="flex items-center gap-2">
-          <div className="grid h-7 w-7 place-items-center rounded-sm bg-primary text-primary-foreground">
-            <Zap className="h-4 w-4" strokeWidth={2.5} />
-          </div>
-          <span className="font-display text-lg">CALL<span className="text-primary">LEDGER</span></span>
-        </div>
-      </div>
-    </header>
   );
 }
 

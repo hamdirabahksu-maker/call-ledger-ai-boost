@@ -9,7 +9,14 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "check-env": "node scripts/check-env.mjs",
+    "db:migrate": "node scripts/apply-migrations.mjs",
+    "db:kyc": "node scripts/apply-kyc-migration.mjs",
+    "db:probe": "node scripts/probe-schema.mjs",
+    "db:probe-kyc": "node scripts/probe-kyc.mjs",
+    "deploy:cf": "npm run build && npx wrangler --cwd .output deploy",
+    "fix-env-quotes": "node scripts/fix-env-quotes.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

@@ -21,11 +21,14 @@ export const Route = createFileRoute("/confirm-email")({
   component: ConfirmEmail,
 });
 
+const RESEND_COOLDOWN_MS = 60_000;
+
 function ConfirmEmail() {
   const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [sending, setSending] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [resendReadyAt, setResendReadyAt] = useState(0);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ""));
@@ -37,6 +40,12 @@ function ConfirmEmail() {
 
   const resend = async () => {
     if (!email) return;
+    const now = Date.now();
+    if (now < resendReadyAt) {
+      const waitSec = Math.ceil((resendReadyAt - now) / 1000);
+      toast.error(`Wait ${waitSec}s before resending.`);
+      return;
+    }
     setSending(true);
     try {
       const { error } = await supabase.auth.resend({
@@ -45,9 +54,12 @@ function ConfirmEmail() {
         options: { emailRedirectTo: window.location.origin + "/app" },
       });
       if (error) throw error;
-      toast.success("Confirmation email sent. Check your inbox.");
+      setResendReadyAt(Date.now() + RESEND_COOLDOWN_MS);
+      toast.success("Confirmation email sent. Check Inbox and Spam.");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Couldn't send email");
+      const msg = err instanceof Error ? err.message : "Couldn't send email";
+      // Avoid dumping raw provider/PII strings into toasts
+      toast.error(msg.length > 120 || /@|\+?\d{7,}/.test(msg) ? "Couldn't send email. Try again shortly." : msg);
     } finally {
       setSending(false);
     }

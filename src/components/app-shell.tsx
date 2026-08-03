@@ -42,51 +42,55 @@ export function AppShell({ children, title, subtitle }: { children: ReactNode; t
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile top bar */}
-      <div className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur md:hidden">
+      <div className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-background/95 px-3 py-2 backdrop-blur md:hidden">
         <BrandLockup size="sm" href="/app" showSubtitle={false} />
-        <button onClick={() => setOpen(!open)} aria-label="Toggle navigation" className="press grid h-9 w-9 place-items-center rounded-full border border-border">
+        <button onClick={() => setOpen(!open)} aria-label="Toggle navigation" className="press grid h-8 w-8 place-items-center rounded-full border border-border">
           {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
         </button>
       </div>
 
       <div className="flex">
-        {/* Sidebar */}
+        {/* Sidebar — denser to match Figma AppShell */}
         <aside className={`${open ? "block" : "hidden"} md:block fixed md:sticky top-0 z-30 h-screen w-[220px] shrink-0 border-r border-border bg-card/30`}>
-          <div className="hidden items-center gap-3 border-b border-border px-4 py-4 md:flex">
-            <BrandLockup size="sm" href="/app" />
+          <div className="hidden items-center gap-2 border-b border-border px-3.5 py-3 md:flex">
+            <BrandLockup size="sm" href="/app" showSubtitle={false} />
           </div>
-          {bizName && <div className="hidden truncate px-4 pt-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground md:block">{bizName}</div>}
-          <nav className="flex flex-col gap-0.5 p-2.5">
+          {bizName && (
+            <div className="hidden truncate px-3.5 pt-2.5 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground md:block">
+              {bizName}
+            </div>
+          )}
+          <nav className="flex flex-col gap-px p-2">
             {NAV.map((item) => {
               const active = pathname === item.to || (item.to !== "/app" && pathname.startsWith(item.to));
               return (
                 <Link key={item.to} to={item.to} onClick={() => setOpen(false)}
-                  className={`press relative flex items-center gap-2.5 rounded-full px-3 py-1.5 text-[13px] ${
+                  className={`press relative flex h-8 items-center gap-2 rounded-full px-2.5 text-[12.5px] leading-none ${
                     active ? "bg-primary/15 font-semibold text-primary" : "text-muted-foreground hover:bg-accent/60 hover:text-foreground"
                   }`}>
                   <span
                     aria-hidden
                     className={`absolute left-0 top-1/2 -translate-y-1/2 rounded-r-full bg-primary transition-all duration-200 ease-out ${
-                      active ? "h-4 w-[3px] opacity-100" : "h-0 w-[3px] opacity-0"
+                      active ? "h-3.5 w-[2.5px] opacity-100" : "h-0 w-[2.5px] opacity-0"
                     }`}
                   />
-                  <item.icon className="h-4 w-4 shrink-0" />
+                  <item.icon className="h-3.5 w-3.5 shrink-0" />
                   {item.label}
                 </Link>
               );
             })}
             {isAdmin && (
               <Link to="/admin" onClick={() => setOpen(false)}
-                className={`press mt-2 flex items-center gap-2.5 rounded-full border border-primary/30 px-3 py-1.5 text-[13px] ${
+                className={`press mt-1.5 flex h-8 items-center gap-2 rounded-full border border-primary/30 px-2.5 text-[12.5px] ${
                   pathname.startsWith("/admin") ? "bg-primary/15 text-primary" : "text-primary/80 hover:bg-primary/10"
                 }`}>
-                <ShieldAlert className="h-4 w-4" /> Admin
+                <ShieldAlert className="h-3.5 w-3.5" /> Admin
               </Link>
             )}
           </nav>
-          <div className="absolute bottom-0 left-0 right-0 border-t border-border p-2.5">
-            <button onClick={signOut} className="press flex w-full items-center gap-2 rounded-full px-3 py-1.5 text-[13px] text-muted-foreground hover:bg-accent/60 hover:text-foreground">
-              <LogOut className="h-4 w-4" /> Sign out
+          <div className="absolute bottom-0 left-0 right-0 border-t border-border p-2">
+            <button onClick={signOut} className="press flex h-8 w-full items-center gap-2 rounded-full px-2.5 text-[12.5px] text-muted-foreground hover:bg-accent/60 hover:text-foreground">
+              <LogOut className="h-3.5 w-3.5" /> Sign out
             </button>
           </div>
         </aside>
@@ -94,15 +98,14 @@ export function AppShell({ children, title, subtitle }: { children: ReactNode; t
         {/* Main */}
         <main className="min-w-0 flex-1 animate-page-enter">
           {(title || subtitle) && (
-            <div className="border-b border-border px-5 py-5">
+            <div className="border-b border-border px-4 py-3.5 md:px-5">
               {subtitle && <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary">{subtitle}</p>}
-              {title && <h1 className="mt-1 font-display text-[28px] leading-tight">{title}</h1>}
+              {title && <h1 className={`font-display text-[26px] leading-tight ${subtitle ? "mt-0.5" : ""}`}>{title}</h1>}
             </div>
           )}
-          <div className="px-4 py-5 md:px-5">{children}</div>
+          <div className="px-4 py-4 md:px-5">{children}</div>
         </main>
       </div>
     </div>
   );
 }
-

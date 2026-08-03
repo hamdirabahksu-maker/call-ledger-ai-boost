@@ -3,12 +3,14 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { loadAdminData } from "@/lib/admin.functions";
+import { adminSetKycStatus } from "@/lib/kyc.functions";
+import { toast } from "sonner";
 import { Zap, ShieldAlert, Users, Building2, CreditCard, ArrowLeft, Sparkles, Download, Mail } from "lucide-react";
 
 type Row = Record<string, any>;
 type AdminData = {
-  waitlist: Row[]; businesses: Row[]; subscriptions: Row[]; leads: Row[];
-  stats: { waitlist: number; businesses: number; paying: number; drafts: number };
+  waitlist: Row[]; businesses: Row[]; subscriptions: Row[]; leads: Row[]; demos: Row[];
+  stats: { waitlist: number; businesses: number; paying: number; drafts: number; demos: number };
   integrations: { resend: boolean };
 };
 
@@ -23,6 +25,12 @@ function Admin() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const load = useServerFn(loadAdminData);
+  const setKyc = useServerFn(adminSetKycStatus);
+
+  const reload = async () => {
+    try { setData(await load({}) as AdminData); }
+    catch (e: any) { setError(e.message ?? "Failed to load"); }
+  };
 
   useEffect(() => {
     (async () => {
@@ -32,10 +40,20 @@ function Admin() {
       const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", u?.user?.id ?? "");
       const admin = roles?.some((r) => r.role === "admin") || email === "hamdi.rabahksu@gmail.com";
       if (!admin) { navigate({ to: "/app" }); return; }
-      try { setData(await load({}) as AdminData); }
-      catch (e: any) { setError(e.message ?? "Failed to load"); }
+      await reload();
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [load, navigate]);
+
+  const onKyc = async (businessId: string, status: "verified" | "rejected") => {
+    try {
+      await setKyc({ data: { businessId, status } });
+      toast.success(status === "verified" ? "KYC verified" : "KYC rejected");
+      await reload();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "KYC update failed");
+    }
+  };
 
   if (error) return <div className="grid min-h-screen place-items-center text-destructive">{error}</div>;
   if (!data) return <div className="grid min-h-screen place-items-center text-muted-foreground">Loading admin…</div>;
@@ -69,6 +87,7 @@ function Admin() {
           <Stat icon={Building2} label="Shops onboarded" value={data.stats.businesses} />
           <Stat icon={CreditCard} label="Paying customers" value={data.stats.paying} tone="amber" />
           <Stat icon={Sparkles} label="Marketing drafts" value={data.stats.drafts} />
+          <Stat icon={Mail} label="Demo requests" value={data.stats.demos ?? data.demos?.length ?? 0} />
         </div>
 
         {!data.integrations.resend && (
@@ -101,8 +120,16 @@ function Admin() {
         </Section>
 
 
+        <Section title="Demo requests" sub={`${(data.demos ?? []).length} entries`}>
+          <Table
+            cols={["name", "email", "phone", "business_name", "trade", "created_at"]}
+            rows={data.demos ?? []}
+            format={{ created_at: (v) => new Date(v).toLocaleString() }}
+          />
+        </Section>
+
         <Section title="Businesses" sub={`${data.businesses.length} shops`}>
-          <BusinessesTable businesses={data.businesses} subscriptions={data.subscriptions} />
+          <BusinessesTable businesses={data.businesses} subscriptions={data.subscriptions} onKyc={onKyc} />
         </Section>
 
         <Section title="Subscriptions">
@@ -201,7 +228,15 @@ function Table({ cols, rows, format }: { cols: string[]; rows: Row[]; format?: R
   );
 }
 
-function BusinessesTable({ businesses, subscriptions }: { businesses: Row[]; subscriptions: Row[] }) {
+function BusinessesTable({
+  businesses,
+  subscriptions,
+  onKyc,
+}: {
+  businesses: Row[];
+  subscriptions: Row[];
+  onKyc: (businessId: string, status: "verified" | "rejected") => void;
+}) {
   const subMap = new Map<string, Row>();
   for (const s of subscriptions) if (!subMap.has(s.business_id)) subMap.set(s.business_id, s);
   const labelFor = (s?: Row) => {
@@ -216,7 +251,7 @@ function BusinessesTable({ businesses, subscriptions }: { businesses: Row[]; sub
     <table className="w-full text-sm">
       <thead>
         <tr className="border-b border-border text-left">
-          {["name", "trade", "country", "billing", "created_at"].map((c) => (
+          {["name", "trade", "kyc", "billing", "created_at", "actions"].map((c) => (
             <th key={c} className="px-4 py-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{c}</th>
           ))}
         </tr>
@@ -224,15 +259,41 @@ function BusinessesTable({ businesses, subscriptions }: { businesses: Row[]; sub
       <tbody>
         {businesses.map((r) => {
           const badge = labelFor(subMap.get(r.id));
+          const kyc = (r.kyc_status as string) || "pending";
           return (
             <tr key={r.id} className="border-b border-border/60">
-              <td className="px-4 py-2.5 text-foreground/90">{r.name ?? "—"}</td>
+              <td className="px-4 py-2.5 text-foreground/90">
+                <div>{r.name ?? "—"}</div>
+                {r.kyc_legal_name && <div className="text-xs text-muted-foreground">{r.kyc_legal_name}</div>}
+              </td>
               <td className="px-4 py-2.5 text-foreground/90">{r.trade ?? "—"}</td>
-              <td className="px-4 py-2.5 text-foreground/90">{r.country ?? "—"}</td>
+              <td className="px-4 py-2.5">
+                <span className="inline-flex rounded-full bg-muted px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {kyc}
+                </span>
+              </td>
               <td className="px-4 py-2.5">
                 <span className={`inline-flex rounded-full px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest ${badge.cls}`}>{badge.text}</span>
               </td>
               <td className="px-4 py-2.5 text-foreground/90">{r.created_at ? new Date(r.created_at).toLocaleDateString() : "—"}</td>
+              <td className="px-4 py-2.5">
+                <div className="flex gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => onKyc(r.id, "verified")}
+                    className="rounded border border-primary/40 px-2 py-0.5 text-[10px] uppercase tracking-widest text-primary hover:bg-primary/10"
+                  >
+                    Verify
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onKyc(r.id, "rejected")}
+                    className="rounded border border-destructive/40 px-2 py-0.5 text-[10px] uppercase tracking-widest text-destructive hover:bg-destructive/10"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </td>
             </tr>
           );
         })}

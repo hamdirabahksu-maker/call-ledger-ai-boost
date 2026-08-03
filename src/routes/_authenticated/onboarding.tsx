@@ -10,7 +10,7 @@ import { Zap, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   validateSearch: z.object({ plan: z.enum(["pilot", "starter", "growth"]).optional() }),
-  head: () => ({ meta: [{ title: "Set up your business — CallLedger AI" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Set up your business — CallLedger" }, { name: "robots", content: "noindex" }] }),
   component: Onboarding,
 });
 
@@ -52,18 +52,18 @@ function Onboarding() {
       { onConflict: "owner_id" }
     ).select("id").maybeSingle();
     if (error) { setBusy(false); return toast.error(error.message); }
-    toast.success("You're all set — welcome aboard.");
+    toast.success("Business saved — next, verify your identity.");
 
 
     if (plan && biz?.id) {
       try {
         const res = await checkout({ data: { plan, businessId: biz.id } });
         if (res.configured) { window.location.href = res.url; return; }
-        toast.error("Stripe not connected yet — going to dashboard.");
+        toast.error("Stripe not connected yet — continue to identity check.");
       } catch { toast.error("Couldn't start checkout"); }
     }
     setBusy(false);
-    navigate({ to: "/app" });
+    navigate({ to: "/kyc" });
   };
 
   return (

@@ -1,0 +1,13 @@
+---
+description: CallLedger business MCP — scope and safety for shop tools
+alwaysApply: true
+---
+
+# CallLedger MCP
+
+When using CallLedger MCP tools:
+
+- Act only on the signed-in business (owner-scoped RLS).
+- Clinics: administrative scheduling only — no medical advice.
+- Never invent SMS or OTP success.
+- CallLedger charcoal+amber identity only — no Marketia or third-party product brands in product guidance.

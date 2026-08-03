@@ -106,6 +106,6 @@ export const getPublicInvoice = createServerFn({ method: "GET" })
       .eq("public_token", data.token).maybeSingle();
     if (!inv) return { invoice: null, business: null };
     const { data: biz } = await sb.from("businesses")
-      .select("name, trade, service_area, phone").eq("id", inv.business_id).maybeSingle();
+      .select("name, trade, service_area, phone, logo_url").eq("id", inv.business_id).maybeSingle();
     return { invoice: inv, business: biz };
   });

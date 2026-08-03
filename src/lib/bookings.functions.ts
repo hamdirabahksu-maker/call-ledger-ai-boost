@@ -29,7 +29,7 @@ export const getPublicBooking = createServerFn({ method: "GET" })
     const sb = serverPublicClient();
     const { data: biz, error } = await sb
       .from("businesses")
-      .select("id, name, trade, service_area, booking_slug, slot_minutes, buffer_minutes, availability, timezone, after_hours_message")
+      .select("id, name, trade, service_area, booking_slug, slot_minutes, buffer_minutes, availability, timezone, after_hours_message, logo_url")
       .eq("booking_slug", data.slug)
       .eq("booking_enabled", true)
       .maybeSingle();

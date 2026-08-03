@@ -4,7 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { getPublicEstimate, respondEstimate } from "@/lib/estimates.functions";
 import type { LineItem } from "@/lib/estimates.functions";
 import { toast } from "sonner";
-import { Check, X, Zap } from "lucide-react";
+import { PublicChrome } from "@/components/public-chrome";
+import { Check, X } from "lucide-react";
 
 export const Route = createFileRoute("/quote/$token")({
   head: ({ params }) => ({ meta: [{ title: `Estimate ${params.token.slice(0, 6)} — CallLedger` }, { name: "robots", content: "noindex" }] }),
@@ -16,7 +17,7 @@ type Estimate = {
   subtotal_cents: number; tax_cents: number; total_cents: number; status: string;
   valid_until: string | null; notes: string | null; public_token: string;
 };
-type Biz = { name: string; trade: string; service_area: string | null; phone: string | null };
+type Biz = { name: string; trade: string; service_area: string | null; phone: string | null; logo_url?: string | null };
 
 function QuotePage() {
   const { token } = Route.useParams();
@@ -55,12 +56,7 @@ function QuotePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-3xl items-center gap-2 px-6 py-4">
-          <div className="grid h-8 w-8 place-items-center rounded-sm bg-primary text-primary-foreground"><Zap className="h-4 w-4" strokeWidth={2.5} /></div>
-          <p className="font-display text-lg">CALL<span className="text-primary">LEDGER</span></p>
-        </div>
-      </header>
+      <PublicChrome logoUrl={biz.logo_url} businessName={biz.name} maxWidthClass="max-w-3xl" />
 
       <main className="mx-auto max-w-3xl px-6 py-10">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">Estimate</p>

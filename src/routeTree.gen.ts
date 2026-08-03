@@ -9,56 +9,44 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as McpRouteImport } from './routes/mcp'
-import { Route as ConfirmEmailRouteImport } from './routes/confirm-email'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as QuoteTokenRouteImport } from './routes/quote.$token'
-import { Route as InvoiceTokenRouteImport } from './routes/invoice.$token'
-import { Route as BookSlugRouteImport } from './routes/book.$slug'
-import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
-import { Route as AuthenticatedReviewsRouteImport } from './routes/_authenticated/reviews'
-import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
-import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated/marketing'
-import { Route as AuthenticatedInvoicesRouteImport } from './routes/_authenticated/invoices'
-import { Route as AuthenticatedEstimatesRouteImport } from './routes/_authenticated/estimates'
-import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
-import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
-import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ConfirmEmailRouteImport } from './routes/confirm-email'
+import { Route as DemoRouteImport } from './routes/demo'
+import { Route as HelpRouteImport } from './routes/help'
+import { Route as McpRouteImport } from './routes/mcp'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
-import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
-import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
+import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
+import { Route as AuthenticatedEstimatesRouteImport } from './routes/_authenticated/estimates'
+import { Route as AuthenticatedInvoicesRouteImport } from './routes/_authenticated/invoices'
+import { Route as AuthenticatedKycRouteImport } from './routes/_authenticated/kyc'
+import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated/marketing'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedReviewsRouteImport } from './routes/_authenticated/reviews'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as BookSlugRouteImport } from './routes/book.$slug'
+import { Route as HelpSlugRouteImport } from './routes/help.$slug'
+import { Route as InvoiceTokenRouteImport } from './routes/invoice.$token'
+import { Route as QuoteTokenRouteImport } from './routes/quote.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const McpRoute = McpRouteImport.update({
-  id: '/mcp',
-  path: '/mcp',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConfirmEmailRoute = ConfirmEmailRouteImport.update({
-  id: '/confirm-email',
-  path: '/confirm-email',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -66,68 +54,56 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRoute = AuthenticatedRouteImport.update({
-  id: '/_authenticated',
+const ConfirmEmailRoute = ConfirmEmailRouteImport.update({
+  id: '/confirm-email',
+  path: '/confirm-email',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const DemoRoute = DemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any)
-const QuoteTokenRoute = QuoteTokenRouteImport.update({
-  id: '/quote/$token',
-  path: '/quote/$token',
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InvoiceTokenRoute = InvoiceTokenRouteImport.update({
-  id: '/invoice/$token',
-  path: '/invoice/$token',
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BookSlugRoute = BookSlugRouteImport.update({
-  id: '/book/$slug',
-  path: '/book/$slug',
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AuthenticatedRoute,
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedReviewsRoute = AuthenticatedReviewsRouteImport.update({
-  id: '/reviews',
-  path: '/reviews',
-  getParentRoute: () => AuthenticatedRoute,
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedMarketingRoute = AuthenticatedMarketingRouteImport.update({
-  id: '/marketing',
-  path: '/marketing',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedInvoicesRoute = AuthenticatedInvoicesRouteImport.update({
-  id: '/invoices',
-  path: '/invoices',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedEstimatesRoute = AuthenticatedEstimatesRouteImport.update({
-  id: '/estimates',
-  path: '/estimates',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedCustomersRoute = AuthenticatedCustomersRouteImport.update({
-  id: '/customers',
-  path: '/customers',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedBookingsRoute = AuthenticatedBookingsRouteImport.update({
-  id: '/bookings',
-  path: '/bookings',
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
@@ -135,26 +111,74 @@ const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   path: '/app',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const AuthenticatedBookingsRoute = AuthenticatedBookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const Char91DotwellKnownChar93OauthProtectedResourceRoute =
-  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
-    id: '/.well-known/oauth-protected-resource',
-    path: '/.well-known/oauth-protected-resource',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const Char91DotmcpChar93ListToolsRoute =
-  Char91DotmcpChar93ListToolsRouteImport.update({
-    id: '/.mcp/list-tools',
-    path: '/.mcp/list-tools',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
-  id: '/api/public/stripe-webhook',
-  path: '/api/public/stripe-webhook',
+const AuthenticatedCustomersRoute = AuthenticatedCustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedEstimatesRoute = AuthenticatedEstimatesRouteImport.update({
+  id: '/estimates',
+  path: '/estimates',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedInvoicesRoute = AuthenticatedInvoicesRouteImport.update({
+  id: '/invoices',
+  path: '/invoices',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedKycRoute = AuthenticatedKycRouteImport.update({
+  id: '/kyc',
+  path: '/kyc',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedMarketingRoute = AuthenticatedMarketingRouteImport.update({
+  id: '/marketing',
+  path: '/marketing',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedReviewsRoute = AuthenticatedReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const BookSlugRoute = BookSlugRouteImport.update({
+  id: '/book/$slug',
+  path: '/book/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpSlugRoute = HelpSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => HelpRoute,
+} as any)
+const InvoiceTokenRoute = InvoiceTokenRouteImport.update({
+  id: '/invoice/$token',
+  path: '/invoice/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuoteTokenRoute = QuoteTokenRouteImport.update({
+  id: '/quote/$token',
+  path: '/quote/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
@@ -163,9 +187,9 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
-const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
-  id: '/.lovable/oauth/consent',
-  path: '/.lovable/oauth/consent',
+const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
+  id: '/api/public/stripe-webhook',
+  path: '/api/public/stripe-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -173,6 +197,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/confirm-email': typeof ConfirmEmailRoute
+  '/demo': typeof DemoRoute
+  '/help': typeof HelpRouteWithChildren
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -185,11 +211,13 @@ export interface FileRoutesByFullPath {
   '/customers': typeof AuthenticatedCustomersRoute
   '/estimates': typeof AuthenticatedEstimatesRoute
   '/invoices': typeof AuthenticatedInvoicesRoute
+  '/kyc': typeof AuthenticatedKycRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/reviews': typeof AuthenticatedReviewsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/book/$slug': typeof BookSlugRoute
+  '/help/$slug': typeof HelpSlugRoute
   '/invoice/$token': typeof InvoiceTokenRoute
   '/quote/$token': typeof QuoteTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -200,6 +228,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/confirm-email': typeof ConfirmEmailRoute
+  '/demo': typeof DemoRoute
+  '/help': typeof HelpRouteWithChildren
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -212,11 +242,13 @@ export interface FileRoutesByTo {
   '/customers': typeof AuthenticatedCustomersRoute
   '/estimates': typeof AuthenticatedEstimatesRoute
   '/invoices': typeof AuthenticatedInvoicesRoute
+  '/kyc': typeof AuthenticatedKycRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/reviews': typeof AuthenticatedReviewsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/book/$slug': typeof BookSlugRoute
+  '/help/$slug': typeof HelpSlugRoute
   '/invoice/$token': typeof InvoiceTokenRoute
   '/quote/$token': typeof QuoteTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -229,6 +261,8 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/confirm-email': typeof ConfirmEmailRoute
+  '/demo': typeof DemoRoute
+  '/help': typeof HelpRouteWithChildren
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -241,11 +275,13 @@ export interface FileRoutesById {
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/estimates': typeof AuthenticatedEstimatesRoute
   '/_authenticated/invoices': typeof AuthenticatedInvoicesRoute
+  '/_authenticated/kyc': typeof AuthenticatedKycRoute
   '/_authenticated/marketing': typeof AuthenticatedMarketingRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/reviews': typeof AuthenticatedReviewsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/book/$slug': typeof BookSlugRoute
+  '/help/$slug': typeof HelpSlugRoute
   '/invoice/$token': typeof InvoiceTokenRoute
   '/quote/$token': typeof QuoteTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -258,6 +294,8 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/confirm-email'
+    | '/demo'
+    | '/help'
     | '/mcp'
     | '/privacy'
     | '/reset-password'
@@ -270,11 +308,13 @@ export interface FileRouteTypes {
     | '/customers'
     | '/estimates'
     | '/invoices'
+    | '/kyc'
     | '/marketing'
     | '/onboarding'
     | '/reviews'
     | '/settings'
     | '/book/$slug'
+    | '/help/$slug'
     | '/invoice/$token'
     | '/quote/$token'
     | '/.lovable/oauth/consent'
@@ -285,6 +325,8 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/confirm-email'
+    | '/demo'
+    | '/help'
     | '/mcp'
     | '/privacy'
     | '/reset-password'
@@ -297,11 +339,13 @@ export interface FileRouteTypes {
     | '/customers'
     | '/estimates'
     | '/invoices'
+    | '/kyc'
     | '/marketing'
     | '/onboarding'
     | '/reviews'
     | '/settings'
     | '/book/$slug'
+    | '/help/$slug'
     | '/invoice/$token'
     | '/quote/$token'
     | '/.lovable/oauth/consent'
@@ -313,6 +357,8 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/confirm-email'
+    | '/demo'
+    | '/help'
     | '/mcp'
     | '/privacy'
     | '/reset-password'
@@ -325,11 +371,13 @@ export interface FileRouteTypes {
     | '/_authenticated/customers'
     | '/_authenticated/estimates'
     | '/_authenticated/invoices'
+    | '/_authenticated/kyc'
     | '/_authenticated/marketing'
     | '/_authenticated/onboarding'
     | '/_authenticated/reviews'
     | '/_authenticated/settings'
     | '/book/$slug'
+    | '/help/$slug'
     | '/invoice/$token'
     | '/quote/$token'
     | '/.lovable/oauth/consent'
@@ -342,6 +390,8 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
   ConfirmEmailRoute: typeof ConfirmEmailRoute
+  DemoRoute: typeof DemoRoute
+  HelpRoute: typeof HelpRouteWithChildren
   McpRoute: typeof McpRoute
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -358,46 +408,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mcp': {
-      id: '/mcp'
-      path: '/mcp'
-      fullPath: '/mcp'
-      preLoaderRoute: typeof McpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/confirm-email': {
-      id: '/confirm-email'
-      path: '/confirm-email'
-      fullPath: '/confirm-email'
-      preLoaderRoute: typeof ConfirmEmailRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -407,109 +422,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/quote/$token': {
-      id: '/quote/$token'
-      path: '/quote/$token'
-      fullPath: '/quote/$token'
-      preLoaderRoute: typeof QuoteTokenRouteImport
+    '/confirm-email': {
+      id: '/confirm-email'
+      path: '/confirm-email'
+      fullPath: '/confirm-email'
+      preLoaderRoute: typeof ConfirmEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/invoice/$token': {
-      id: '/invoice/$token'
-      path: '/invoice/$token'
-      fullPath: '/invoice/$token'
-      preLoaderRoute: typeof InvoiceTokenRouteImport
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/book/$slug': {
-      id: '/book/$slug'
-      path: '/book/$slug'
-      fullPath: '/book/$slug'
-      preLoaderRoute: typeof BookSlugRouteImport
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/settings': {
-      id: '/_authenticated/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/reviews': {
-      id: '/_authenticated/reviews'
-      path: '/reviews'
-      fullPath: '/reviews'
-      preLoaderRoute: typeof AuthenticatedReviewsRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/onboarding': {
-      id: '/_authenticated/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/marketing': {
-      id: '/_authenticated/marketing'
-      path: '/marketing'
-      fullPath: '/marketing'
-      preLoaderRoute: typeof AuthenticatedMarketingRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/invoices': {
-      id: '/_authenticated/invoices'
-      path: '/invoices'
-      fullPath: '/invoices'
-      preLoaderRoute: typeof AuthenticatedInvoicesRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/estimates': {
-      id: '/_authenticated/estimates'
-      path: '/estimates'
-      fullPath: '/estimates'
-      preLoaderRoute: typeof AuthenticatedEstimatesRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/customers': {
-      id: '/_authenticated/customers'
-      path: '/customers'
-      fullPath: '/customers'
-      preLoaderRoute: typeof AuthenticatedCustomersRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/bookings': {
-      id: '/_authenticated/bookings'
-      path: '/bookings'
-      fullPath: '/bookings'
-      preLoaderRoute: typeof AuthenticatedBookingsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/app': {
-      id: '/_authenticated/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AuthenticatedAppRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/.well-known/oauth-protected-resource': {
-      id: '/.well-known/oauth-protected-resource'
-      path: '/.well-known/oauth-protected-resource'
-      fullPath: '/.well-known/oauth-protected-resource'
-      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/list-tools': {
@@ -519,11 +485,123 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/stripe-webhook': {
-      id: '/api/public/stripe-webhook'
-      path: '/api/public/stripe-webhook'
-      fullPath: '/api/public/stripe-webhook'
-      preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/app': {
+      id: '/_authenticated/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthenticatedAppRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/bookings': {
+      id: '/_authenticated/bookings'
+      path: '/bookings'
+      fullPath: '/bookings'
+      preLoaderRoute: typeof AuthenticatedBookingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/customers': {
+      id: '/_authenticated/customers'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof AuthenticatedCustomersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/estimates': {
+      id: '/_authenticated/estimates'
+      path: '/estimates'
+      fullPath: '/estimates'
+      preLoaderRoute: typeof AuthenticatedEstimatesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/invoices': {
+      id: '/_authenticated/invoices'
+      path: '/invoices'
+      fullPath: '/invoices'
+      preLoaderRoute: typeof AuthenticatedInvoicesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/kyc': {
+      id: '/_authenticated/kyc'
+      path: '/kyc'
+      fullPath: '/kyc'
+      preLoaderRoute: typeof AuthenticatedKycRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/marketing': {
+      id: '/_authenticated/marketing'
+      path: '/marketing'
+      fullPath: '/marketing'
+      preLoaderRoute: typeof AuthenticatedMarketingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/reviews': {
+      id: '/_authenticated/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof AuthenticatedReviewsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/book/$slug': {
+      id: '/book/$slug'
+      path: '/book/$slug'
+      fullPath: '/book/$slug'
+      preLoaderRoute: typeof BookSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help/$slug': {
+      id: '/help/$slug'
+      path: '/$slug'
+      fullPath: '/help/$slug'
+      preLoaderRoute: typeof HelpSlugRouteImport
+      parentRoute: typeof HelpRoute
+    }
+    '/invoice/$token': {
+      id: '/invoice/$token'
+      path: '/invoice/$token'
+      fullPath: '/invoice/$token'
+      preLoaderRoute: typeof InvoiceTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quote/$token': {
+      id: '/quote/$token'
+      path: '/quote/$token'
+      fullPath: '/quote/$token'
+      preLoaderRoute: typeof QuoteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/invoke-tool/$tool': {
@@ -533,11 +611,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.lovable/oauth/consent': {
-      id: '/.lovable/oauth/consent'
-      path: '/.lovable/oauth/consent'
-      fullPath: '/.lovable/oauth/consent'
-      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+    '/api/public/stripe-webhook': {
+      id: '/api/public/stripe-webhook'
+      path: '/api/public/stripe-webhook'
+      fullPath: '/api/public/stripe-webhook'
+      preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -550,6 +628,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedEstimatesRoute: typeof AuthenticatedEstimatesRoute
   AuthenticatedInvoicesRoute: typeof AuthenticatedInvoicesRoute
+  AuthenticatedKycRoute: typeof AuthenticatedKycRoute
   AuthenticatedMarketingRoute: typeof AuthenticatedMarketingRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedReviewsRoute: typeof AuthenticatedReviewsRoute
@@ -563,6 +642,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedEstimatesRoute: AuthenticatedEstimatesRoute,
   AuthenticatedInvoicesRoute: AuthenticatedInvoicesRoute,
+  AuthenticatedKycRoute: AuthenticatedKycRoute,
   AuthenticatedMarketingRoute: AuthenticatedMarketingRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedReviewsRoute: AuthenticatedReviewsRoute,
@@ -573,11 +653,23 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface HelpRouteChildren {
+  HelpSlugRoute: typeof HelpSlugRoute
+}
+
+const HelpRouteChildren: HelpRouteChildren = {
+  HelpSlugRoute: HelpSlugRoute,
+}
+
+const HelpRouteWithChildren = HelpRoute._addFileChildren(HelpRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
   ConfirmEmailRoute: ConfirmEmailRoute,
+  DemoRoute: DemoRoute,
+  HelpRoute: HelpRouteWithChildren,
   McpRoute: McpRoute,
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,

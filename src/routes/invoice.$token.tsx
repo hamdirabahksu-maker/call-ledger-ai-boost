@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { getPublicInvoice } from "@/lib/invoices.functions";
 import type { LineItem } from "@/lib/estimates.functions";
-import { Zap } from "lucide-react";
+import { PublicChrome } from "@/components/public-chrome";
 
 export const Route = createFileRoute("/invoice/$token")({
   head: ({ params }) => ({ meta: [{ title: `Invoice ${params.token.slice(0, 6)} — CallLedger` }, { name: "robots", content: "noindex" }] }),
@@ -15,7 +15,7 @@ type Invoice = {
   subtotal_cents: number; tax_cents: number; total_cents: number; amount_paid_cents: number;
   status: string; due_date: string | null; notes: string | null; public_token: string;
 };
-type Biz = { name: string; trade: string; service_area: string | null; phone: string | null };
+type Biz = { name: string; trade: string; service_area: string | null; phone: string | null; logo_url?: string | null };
 
 function InvoicePage() {
   const { token } = Route.useParams();
@@ -34,12 +34,7 @@ function InvoicePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-3xl items-center gap-2 px-6 py-4">
-          <div className="grid h-8 w-8 place-items-center rounded-sm bg-primary text-primary-foreground"><Zap className="h-4 w-4" strokeWidth={2.5} /></div>
-          <p className="font-display text-lg">CALL<span className="text-primary">LEDGER</span></p>
-        </div>
-      </header>
+      <PublicChrome logoUrl={biz.logo_url} businessName={biz.name} maxWidthClass="max-w-3xl" />
       <main className="mx-auto max-w-3xl px-6 py-10">
         <div className="flex items-baseline justify-between">
           <div>

@@ -31,6 +31,7 @@ function Landing() {
       <Proof />
       <Pricing />
       <FAQ />
+      <ConnectAI />
       <FinalCTA />
       <Footer />
     </div>
@@ -65,6 +66,7 @@ function Nav() {
               ["Product", "#how"],
               ["Industries", "#industries"],
               ["Pricing", "#pricing"],
+              ["Connect AI", "#connect-ai"],
               ["FAQ", "#faq"],
             ].map(([label, href]) => (
               <a
@@ -153,18 +155,30 @@ function Hero() {
           <Link
             to="/auth"
             search={{ mode: "signup", plan: "pilot" } as any}
-            className="group inline-flex items-center gap-2 press rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-black hover:bg-amber-300"
+            className="group inline-flex items-center gap-2 press rounded-full bg-amber-400 px-7 py-3.5 text-sm font-semibold text-black hover:bg-amber-300"
           >
             Start 30-day pilot · $49
             <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
           </Link>
-          <a
-            href="#how"
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.03] px-6 py-3 text-sm text-white/80 backdrop-blur transition hover:bg-white/[0.06] hover:text-white"
+          <Link
+            to="/demo"
+            className="group inline-flex items-center gap-2 press rounded-full border border-amber-400/70 bg-amber-400/[0.08] px-7 py-3.5 text-sm font-semibold text-amber-300 backdrop-blur transition hover:border-amber-400 hover:bg-amber-400/15 hover:text-amber-200"
           >
             Book a demo
-          </a>
+            <ArrowRight className="h-4 w-4 opacity-70 transition group-hover:translate-x-0.5 group-hover:opacity-100" />
+          </Link>
         </div>
+        <p
+          className="mt-4 animate-rise text-center text-xs text-white/40"
+          style={{ animationDelay: "220ms" }}
+        >
+          Prefer a walkthrough?{" "}
+          <Link to="/demo" className="text-amber-400/90 underline-offset-2 hover:underline">
+            Book a 20-minute demo
+          </Link>
+          {" · "}
+          <a href="#how" className="hover:text-white/70">See how it works</a>
+        </p>
 
         <p
           className="mt-14 animate-rise font-mono text-[10px] uppercase tracking-[0.3em] text-white/30"
@@ -492,6 +506,69 @@ function FAQ() {
   );
 }
 
+/* ---------------- CONNECT AI / MCP ---------------- */
+function ConnectAI() {
+  const ref = useReveal<HTMLDivElement>();
+  const tools = [
+    "Leads & bookings",
+    "Customers",
+    "Invoices & estimates",
+    "Review requests",
+    "Missed calls",
+  ];
+  return (
+    <section id="connect-ai" className="border-t border-white/5 bg-[#050505] py-28">
+      <div className="mx-auto max-w-6xl px-4">
+        <div ref={ref} className="reveal grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-amber-400">Connect AI</p>
+            <h2 className="mt-4 font-display text-4xl leading-[1.05] md:text-5xl text-balance">
+              Your shop data, in the AI tools you already use.
+            </h2>
+            <p className="mt-5 max-w-xl text-lg text-white/55 leading-relaxed">
+              CallLedger exposes a business MCP endpoint. Point Cursor (or any MCP client) at your
+              account — read leads, book jobs, list invoices — scoped to your shop only.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                to="/help/$slug"
+                params={{ slug: "connect-ai-mcp" }}
+                className="group inline-flex items-center gap-2 press rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-black hover:bg-amber-300"
+              >
+                How to connect
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              <Link
+                to="/auth"
+                className="inline-flex items-center gap-2 press rounded-full border border-amber-400/60 bg-amber-400/[0.08] px-6 py-3 text-sm font-semibold text-amber-300 hover:border-amber-400 hover:bg-amber-400/15"
+              >
+                Start free
+              </Link>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-amber-400/25 bg-gradient-to-b from-amber-400/[0.08] to-transparent p-7">
+            <BrandLockup size="sm" showSubtitle={false} />
+            <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.25em] text-amber-400/80">
+              MCP · /mcp
+            </p>
+            <ul className="mt-4 space-y-3">
+              {tools.map((t) => (
+                <li key={t} className="flex items-center gap-3 text-sm text-white/80">
+                  <Sparkles className="h-3.5 w-3.5 shrink-0 text-amber-400" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 text-xs text-white/40">
+              Owner-scoped. No invented SMS success. Clinics: admin scheduling only — never medical advice.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ---------------- FINAL CTA ---------------- */
 function FinalCTA() {
   const [email, setEmail] = useState("");
@@ -522,7 +599,11 @@ function FinalCTA() {
           Stop losing customers to whoever picks up first.
         </h2>
         <p className="mt-6 text-lg text-white/55">
-          Join the early-access list. We onboard 10 businesses a week.
+          Join the early-access list — or{" "}
+          <Link to="/demo" className="font-semibold text-amber-400 hover:brightness-110">
+            book a live demo
+          </Link>
+          . We onboard 10 businesses a week.
         </p>
 
         {done ? (
@@ -570,6 +651,8 @@ function Footer() {
         <div className="flex flex-wrap items-center justify-center gap-5">
           <a href="mailto:hamdi.rabahksu@gmail.com" className="hover:text-white">hamdi.rabahksu@gmail.com</a>
           <span className="opacity-40">·</span>
+          <Link to="/help" className="hover:text-white">Help</Link>
+          <Link to="/demo" className="hover:text-white">Demo</Link>
           <Link to="/privacy" className="hover:text-white">Privacy</Link>
           <Link to="/terms" className="hover:text-white">Terms</Link>
           <span className="opacity-40">·</span>

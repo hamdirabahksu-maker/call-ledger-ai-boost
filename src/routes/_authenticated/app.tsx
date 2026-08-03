@@ -81,8 +81,8 @@ function Dashboard() {
     try {
       const res = await sendSmsFn({ data: { to: lead.phone, body: message, leadId: lead.id } });
       if (!res.configured) { toast.error("Twilio not configured"); setTwilioConfigured(false); return; }
-      if (!res.ok) { toast.error(res.error || "SMS failed"); return; }
-      toast.success(`SMS sent to ${lead.name}`);
+      if (!res.ok) { toast.error("SMS failed — check Twilio setup"); return; }
+      toast.success("SMS sent");
     } catch { toast.error("SMS failed"); }
   };
 
@@ -227,7 +227,7 @@ function Dashboard() {
             <div className="space-y-2 p-4">
               <QuickActionLink icon={Send} title="Send estimate" body="Open estimates and follow up on open quotes." to="/estimates" />
               <QuickActionLink icon={Star} title="Ask for a review" body="Send a Google review link to recent jobs." to="/reviews" />
-              <QuickAction icon={MessageSquare} title="Broadcast a message" body="Notify booked customers of schedule changes." onClick={() => toast.info("Broadcast composer — coming soon")} />
+              <QuickActionLink icon={MessageSquare} title="Draft outreach SMS" body="Use AI Marketing to draft a message, then send from Reviews or Customers." to="/marketing" />
             </div>
           </section>
 

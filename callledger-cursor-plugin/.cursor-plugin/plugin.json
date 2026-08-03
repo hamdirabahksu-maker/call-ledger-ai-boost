@@ -1,0 +1,24 @@
+{
+  "name": "callledger",
+  "displayName": "CallLedger",
+  "description": "Connect Cursor to your CallLedger business MCP — leads, bookings, invoices, estimates, and more. CallLedger brand only.",
+  "version": "0.1.0",
+  "author": {
+    "name": "CallLedger"
+  },
+  "license": "MIT",
+  "keywords": [
+    "callledger",
+    "mcp",
+    "service-business",
+    "bookings"
+  ],
+  "category": "developer-tools",
+  "tags": [
+    "mcp",
+    "callledger"
+  ],
+  "skills": "./skills/",
+  "rules": "./rules/",
+  "mcpServers": "./.cursor-plugin/mcp.json"
+}

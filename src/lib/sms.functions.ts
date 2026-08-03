@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertRateLimit } from "@/lib/rate-limit";
 
 export const getTwilioStatus = createServerFn({ method: "GET" }).handler(async () => {
   return {
@@ -19,6 +20,7 @@ export const sendSms = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { to: string; body: string; leadId?: string }) => input)
   .handler(async ({ data, context }) => {
+    assertRateLimit(`sms:${context.userId}`, { limit: 20, windowMs: 60_000 });
     const sid = process.env.TWILIO_ACCOUNT_SID;
     const token = process.env.TWILIO_AUTH_TOKEN;
     const from = process.env.TWILIO_PHONE_NUMBER;
@@ -30,6 +32,7 @@ export const sendSms = createServerFn({ method: "POST" })
     if (!to) throw new Error("Missing destination phone");
     const bodyText = (data.body || "").slice(0, 1600);
     if (!bodyText) throw new Error("Empty message");
+    // Never echo full phone/body in client-facing errors — Twilio message only.
 
     const form = new URLSearchParams();
     form.set("To", to);
@@ -56,10 +59,11 @@ export const sendSms = createServerFn({ method: "POST" })
     };
     if (!res.ok) {
       console.error(`Twilio send failed [${res.status}]: ${payload.message ?? "unknown"}`);
+      // Never return raw Twilio text (may include phone/PII) to the client toast path
       return {
         configured: true as const,
         ok: false as const,
-        error: payload.message ?? `Twilio error ${res.status}`,
+        error: "SMS failed. Check Twilio credentials and destination number.",
       };
     }
 

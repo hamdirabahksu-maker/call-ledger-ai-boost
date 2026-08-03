@@ -94,9 +94,18 @@ export type Database = {
           created_at: string
           google_review_url: string | null
           id: string
+          logo_url: string | null
           name: string
           owner_id: string
           phone: string | null
+          phone_verified_at: string | null
+          kyc_status: string
+          kyc_legal_name: string | null
+          kyc_registration_id: string | null
+          kyc_doc_url: string | null
+          kyc_submitted_at: string | null
+          kyc_reviewed_at: string | null
+          kyc_notes: string | null
           service_area: string | null
           slot_minutes: number
           timezone: string | null
@@ -113,9 +122,18 @@ export type Database = {
           created_at?: string
           google_review_url?: string | null
           id?: string
+          logo_url?: string | null
           name: string
           owner_id: string
           phone?: string | null
+          phone_verified_at?: string | null
+          kyc_status?: string
+          kyc_legal_name?: string | null
+          kyc_registration_id?: string | null
+          kyc_doc_url?: string | null
+          kyc_submitted_at?: string | null
+          kyc_reviewed_at?: string | null
+          kyc_notes?: string | null
           service_area?: string | null
           slot_minutes?: number
           timezone?: string | null
@@ -132,14 +150,56 @@ export type Database = {
           created_at?: string
           google_review_url?: string | null
           id?: string
+          logo_url?: string | null
           name?: string
           owner_id?: string
           phone?: string | null
+          phone_verified_at?: string | null
+          kyc_status?: string
+          kyc_legal_name?: string | null
+          kyc_registration_id?: string | null
+          kyc_doc_url?: string | null
+          kyc_submitted_at?: string | null
+          kyc_reviewed_at?: string | null
+          kyc_notes?: string | null
           service_area?: string | null
           slot_minutes?: number
           timezone?: string | null
           trade?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      demo_requests: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          phone: string | null
+          business_name: string | null
+          trade: string | null
+          message: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          phone?: string | null
+          business_name?: string | null
+          trade?: string | null
+          message?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          phone?: string | null
+          business_name?: string | null
+          trade?: string | null
+          message?: string | null
+          created_at?: string
         }
         Relationships: []
       }

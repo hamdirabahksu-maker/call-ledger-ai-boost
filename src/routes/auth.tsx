@@ -130,10 +130,15 @@ function AuthPage() {
         options: { redirectTo: returnUrl },
       });
       if (error) {
-        const msg = error.message?.toLowerCase() ?? "";
-        if (msg.includes("provider is not enabled") || msg.includes("unsupported provider") || msg.includes("not enabled")) {
+        const msg = `${error.message ?? ""} ${(error as { msg?: string }).msg ?? ""}`.toLowerCase();
+        if (
+          msg.includes("provider is not enabled")
+          || msg.includes("unsupported provider")
+          || msg.includes("not enabled")
+        ) {
           setUnavailable((u) => ({ ...u, [provider]: true }));
-          toast.error(`${provider === "azure" ? "Microsoft" : provider[0].toUpperCase() + provider.slice(1)} sign-in is not connected yet.`);
+          const label = provider === "azure" ? "Microsoft" : provider[0].toUpperCase() + provider.slice(1);
+          toast.error(`${label} sign-in is not enabled on this Supabase project. Use email/password, or enable it under Authentication → Providers.`);
         } else {
           throw error;
         }

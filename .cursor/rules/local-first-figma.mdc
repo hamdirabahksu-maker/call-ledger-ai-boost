@@ -1,0 +1,13 @@
+---
+description: CallLedger local-first workflow — Figma design, repo implementation, no Lovable agent as source of truth
+alwaysApply: true
+---
+
+# CallLedger — local-first
+
+- **Source of truth for code:** this repo (`call-ledger-ai-boost`). Edit in Cursor.
+- **Source of truth for UI/UX:** Figma file `PMiAmsigk53HN12SuETxgZ` (see `cursor-team/FIGMA-CALLLEDGER.md`).
+- **Source of truth for DB:** your Supabase project in `.env` (not Lovable Cloud).
+- **Do not** use Lovable MCP `send_message`, agent edits, or Publish for day-to-day work (avoids credit burns). Lovable is optional/legacy only.
+- Brand: dark charcoal + amber, BrandLockup / signal bars — do **not** copy Sollo.
+- Implement Figma → local with existing components (`BrandLockup`, `BrandMark`, `PublicChrome`, tokens in `styles.css`).

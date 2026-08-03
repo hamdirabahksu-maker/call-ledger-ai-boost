@@ -1,42 +1,60 @@
-# Call Recovery Hub
+# CallLedger AI
 
-Build CallLedger AI — a serious B2B SaaS (not a template site).
+AI front office for service businesses — missed-call SMS recovery, booking, estimates, invoices, reviews.
 
-PRODUCT: AI front-office for solo HVAC, plumbing, and electrical businesses (1–10 person shops in US/Canada). They miss after-hours calls and lose $800–$3000 jobs. ServiceTitan is too expensive. We are the simple AI layer: missed-call recovery → SMS/voice booking → estimate follow-up → review ask.
+**Local-first:** this repo + your Supabase (`.env`) + Cloudflare (or other) deploy. **Lovable is not required** for day-to-day or shipping.
 
-DESIGN: Bold industrial-clean. Dark charcoal + amber accent. No purple SaaS clichés. No generic Inter look — distinctive typography. Mobile-first (owners are on phones). Full-bleed hero with real trade-atmosphere imagery vibe (gradient/atmosphere OK if no photo). Brand name CALLLEDGER must dominate the first viewport. One headline, one subline, one CTA group only in hero — no stats strips or card grids in hero.
-
-PAGES TO BUILD NOW:
-1) Marketing landing (/) — hero, problem (missed calls), solution (3 steps), pricing ($49 pilot / $99 Starter / $199 Growth monthly), FAQ, final CTA. Support email: hamdi.rabahksu@gmail.com
-2) Auth stub — Sign up / Log in (email magic link or email+password via Lovable cloud auth if available)
-3) App dashboard (/app) — protected: Today’s leads, Missed calls list (mock data), Bookings calendar strip, Quick actions (Send estimate SMS, Ask for review). Make it feel like a real product, not Lorem ipsum.
-4) Onboarding (/onboarding) — business name, trade type (HVAC/Plumbing/Electrical), phone, service area, after-hours message.
-
-TECH: Production-quality React + Tailwind + shadcn. Use Lovable Cloud/database if needed for waitlist + businesses table. Waitlist/early access capture on landing that stores email + trade type.
-
-COPY TONE: Direct, money-aware, respect tradespeople. No hype-bro language. No medical content.
-
-Ship a polished MVP preview in this first build.
-
-This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://call-ledger-ai-boost.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/7dfb742a-c971-49ff-8acd-2eca08b85c86).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+```powershell
+npm install
 npm run dev
 ```
+
+→ http://localhost:8080  
+
+See [LOCAL-DEV.md](./LOCAL-DEV.md) for env vars and backend options. Finish checklist: [OPS-QC.md](./OPS-QC.md) · human tasks: `../cursor-team/HUMAN-TASKS.md`.
+
+## Stack
+
+- TanStack Start + React + Tailwind
+- Supabase Auth / Postgres (**your** project via `.env`)
+- Stripe checkout + webhook
+- Twilio SMS + Verify OTP
+
+## Key routes
+
+| Path | Purpose |
+|------|---------|
+| `/` | Landing |
+| `/auth` | Sign in / sign up / forgot |
+| `/app` | Dashboard |
+| `/kyc` | Business KYC soft-gate |
+| `/settings` | Business, booking slug, logo, phone OTP, billing |
+| `/help` | Help center |
+| `/demo` | Book a product demo |
+| `/book/$slug` | Public booking |
+| `/quote/$token` | Public estimate |
+| `/admin` | Ops (admin role) |
+
+## Reality Pass
+
+- **Batch A:** email confirm gate, AppShell, real actions, Stripe/Twilio wiring
+- **Batch B:** phone OTP, `/help`, `/demo`, logo + booking slug on public pages
+- **Batch C:** rate limits on SMS/OTP/demo/confirm-email resend; RLS notes in `supabase/migrations/`
+- **KYC / Connect AI / MCP:** soft KYC gate + Connect AI + MCP settings polish (`feature/kyc-connect-ai-mcp`)
+- **Cleanup:** sample seed disabled; no mass SMS broadcast (use **Marketing** drafts); see [OPS-QC.md](./OPS-QC.md)
+
+Apply migrations on **your** Supabase (see LOCAL-DEV.md). KYC:
+
+```powershell
+npm run db:probe-kyc
+npm run db:kyc   # needs SUPABASE_ACCESS_TOKEN, or paste SQL in dashboard
+```
+
+## Ship without Lovable
+
+1. `npm run dev` locally; fill `.env` from **your** Supabase (see `.env.example`).
+2. `npm run build` — Nitro defaults to **Cloudflare Workers** (`.output/` + wrangler).
+3. Deploy to Cloudflare (simplest), or Vercel / Node host with the matching Nitro preset.
+4. Point `APP_URL` / `VITE_APP_URL` at **your** host. Keep `SUPABASE_*` on your project.
+
+Details: [OPS-QC.md — Ship without Lovable](./OPS-QC.md#ship-without-lovable). The live `*.lovable.app` URL can be abandoned; local + your host is the product.

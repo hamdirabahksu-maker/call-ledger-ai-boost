@@ -1,0 +1,13 @@
+# CallLedger — Cloudflare Workers notes
+# After `npm run build`, Nitro emits the real deploy config:
+#   .output/server/wrangler.json
+# Prefer that over this stub. Deploy only after you approve:
+#   npm run build
+#   npx wrangler deploy --config .output/server/wrangler.json
+# Or: npm run deploy:cf
+#
+# Set Workers secrets to match .env (SUPABASE_*, APP_URL, STRIPE_*, TWILIO_*, …).
+# Production APP_URL / VITE_APP_URL must be the live origin (rebuild if VITE_* change).
+
+name = "callledger"
+compatibility_date = "2025-08-01"

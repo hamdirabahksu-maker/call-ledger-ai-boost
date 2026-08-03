@@ -96,7 +96,7 @@ export const getPublicEstimate = createServerFn({ method: "GET" })
       .eq("public_token", data.token).maybeSingle();
     if (!est) return { estimate: null, business: null };
     const { data: biz } = await sb.from("businesses")
-      .select("name, trade, service_area, phone").eq("id", est.business_id).maybeSingle();
+      .select("name, trade, service_area, phone, logo_url").eq("id", est.business_id).maybeSingle();
     return { estimate: est, business: biz };
   });
 
