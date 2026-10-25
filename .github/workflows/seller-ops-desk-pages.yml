@@ -2,6 +2,10 @@ name: Publish Seller Ops Desk demo
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/seller-ops-desk-pages.yml"
 
 permissions:
   contents: read
@@ -23,6 +27,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Set up Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - name: Assemble static app only
         run: |
           mkdir -p _site/seller-ops-desk
