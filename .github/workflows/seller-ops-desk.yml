@@ -1,0 +1,50 @@
+name: Seller Ops Desk and Core checks
+
+on:
+  push:
+    paths:
+      - "tools/seller-ops-desk/**"
+      - "packages/seller-ops-core/**"
+      - ".github/workflows/seller-ops-desk.yml"
+  pull_request:
+    paths:
+      - "tools/seller-ops-desk/**"
+      - "packages/seller-ops-core/**"
+      - ".github/workflows/seller-ops-desk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    name: Reusable core package
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Syntax check
+        working-directory: packages/seller-ops-core
+        run: npm run check
+      - name: Unit tests
+        working-directory: packages/seller-ops-core
+        run: npm test
+
+  app:
+    name: Browser app
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Syntax check
+        working-directory: tools/seller-ops-desk
+        run: npm run check
+      - name: Unit tests
+        working-directory: tools/seller-ops-desk
+        run: npm test

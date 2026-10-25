@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="A private-by-default operations desk for marketplace sales reports, internal follow-ups, tasks and unit economics.">
+  <title>Seller Ops Desk</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <a class="brand" href="#overview"><span class="brand-mark">S</span><span><strong>Seller Ops</strong><small>DESK</small></span></a>
+      <div class="workspace-label">WORKSPACE</div>
+      <nav class="nav-list">
+        <a class="nav-item active" href="#overview">Overview</a>
+        <a class="nav-item" href="#sales">Sales reports <span id="order-badge" class="nav-count">0</span></a>
+        <a class="nav-item" href="#follow-ups">Calls & follow-ups <span id="call-badge" class="nav-count">0</span></a>
+        <a class="nav-item" href="#tasks">Tasks <span id="task-badge" class="nav-count">0</span></a>
+        <a class="nav-item" href="#economics">Unit economics</a>
+      </nav>
+      <div class="sidebar-bottom"><span class="local-dot"></span><div><strong>Local-only workspace</strong><small>Your data stays in this browser</small></div></div>
+      <div class="sidebar-footer">Independent community project<br>Not affiliated with Amazon</div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar">
+        <div class="breadcrumb">Workspace <span>/</span> Overview</div>
+        <div class="topbar-actions">
+          <label class="button button-secondary file-button" for="report-file">Import report</label>
+          <input id="report-file" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values" hidden>
+          <button id="export-backup" class="button button-primary" type="button">Export backup</button>
+        </div>
+      </header>
+      <section class="view" id="overview">
+        <div class="page-heading">
+          <div><p class="eyebrow">SELLER OPERATIONS / LOCAL-FIRST</p><h1>Know what is moving.<br><span>Act on what needs attention.</span></h1><p class="lead">A calm workspace for sales exports, internal calls, follow-ups, and product margins.</p></div>
+          <button id="load-sample" class="button button-quiet" type="button">Load synthetic sample</button>
+        </div>
+        <div class="notice" role="note"><strong>Privacy by default</strong><span>Reports are parsed in this browser. Buyer email, phone, and address columns are not retained. Live Amazon API connection is not implemented.</span></div>
+        <div class="metric-grid" aria-label="Sales overview">
+          <article class="metric-card"><div class="metric-label">Active orders</div><div id="metric-orders" class="metric-value">0</div><div class="metric-foot">Distinct, non-cancelled orders</div></article>
+          <article class="metric-card"><div class="metric-label">Units sold</div><div id="metric-units" class="metric-value">0</div><div class="metric-foot">From imported line items</div></article>
+          <article class="metric-card"><div class="metric-label">Reported sales</div><div id="metric-revenue" class="metric-value">—</div><div class="metric-foot">Shown separately by currency</div></article>
+          <article class="metric-card"><div class="metric-label">Open follow-ups</div><div id="metric-followups" class="metric-value">0</div><div class="metric-foot">Internal calls and tasks due</div></article>
+        </div>
+        <section class="panel" id="sales">
+          <div class="panel-heading"><div><p class="eyebrow">REPORTS</p><h2>Sales activity</h2></div><div class="table-actions"><input id="order-search" class="search-input" type="search" placeholder="Search order, SKU, ASIN or title" aria-label="Search orders"><select id="status-filter" class="select-input" aria-label="Filter order status"><option value="all">All statuses</option><option value="active">Active</option><option value="cancelled">Cancelled</option></select></div></div>
+          <div id="import-message" class="inline-message" role="status" aria-live="polite">Import a CSV or TSV exported from Seller Central to populate this view.</div>
+          <div id="report-warnings" class="warning-list" hidden></div>
+          <div class="table-wrap"><table><thead><tr><th>Order</th><th>Date</th><th>Product</th><th>SKU / ASIN</th><th>Status</th><th class="numeric">Units</th><th class="numeric">Item sales</th></tr></thead><tbody id="orders-body"><tr><td class="empty-cell" colspan="7">No report loaded yet.</td></tr></tbody></table></div>
+          <div class="panel-footer"><span id="orders-count">0 line items</span><button id="export-csv" class="text-button" type="button">Export sanitized orders CSV</button></div>
+        </section>
+        <div class="two-column">
+          <section class="panel" id="follow-ups">
+            <div class="panel-heading"><div><p class="eyebrow">RELATIONSHIPS</p><h2>Calls & follow-ups</h2></div><span class="section-dot"></span></div>
+            <form id="call-form" class="compact-form">
+              <label>Contact or business<input id="call-contact" maxlength="100" required placeholder="Supplier, carrier, partner…"></label>
+              <label>Reason / next step<input id="call-purpose" maxlength="180" required placeholder="Confirm restock date"></label>
+              <div class="form-row"><label>Follow-up date<input id="call-date" type="date"></label><label>Priority<select id="call-priority"><option value="normal">Normal</option><option value="high">High</option><option value="low">Low</option></select></label></div>
+              <button class="button button-primary full-width" type="submit">Add follow-up</button>
+            </form>
+            <div id="calls-list" class="record-list"><p class="empty-note">No follow-ups yet. Add internal supplier or partner actions here.</p></div>
+          </section>
+          <section class="panel" id="tasks">
+            <div class="panel-heading"><div><p class="eyebrow">EXECUTION</p><h2>Task list</h2></div><span class="section-dot"></span></div>
+            <form id="task-form" class="compact-form">
+              <label>Task<input id="task-title" maxlength="180" required placeholder="Check stock cover for SKU-123"></label>
+              <div class="form-row"><label>Due date<input id="task-date" type="date"></label><label>Category<select id="task-kind"><option value="Inventory">Inventory</option><option value="Listing">Listing</option><option value="Supplier">Supplier</option><option value="Finance">Finance</option><option value="Other">Other</option></select></label></div>
+              <button class="button button-primary full-width" type="submit">Add task</button>
+            </form>
+            <div id="tasks-list" class="record-list"><p class="empty-note">No tasks yet. Keep the next action visible.</p></div>
+          </section>
+        </div>
+        <section class="panel economics-panel" id="economics">
+          <div class="panel-heading"><div><p class="eyebrow">PRODUCT DECISIONS</p><h2>Unit economics calculator</h2><p class="panel-subtitle">Estimate contribution per unit using your own fee assumptions. This does not fetch current Amazon fees.</p></div></div>
+          <form id="economics-form" class="economics-layout">
+            <div class="economics-fields">
+              <label>Currency<select name="currency"><option value="USD">USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — Pound</option><option value="CAD">CAD — Canadian Dollar</option><option value="AUD">AUD — Australian Dollar</option><option value="JPY">JPY — Japanese Yen</option><option value="INR">INR — Indian Rupee</option><option value="AED">AED — UAE Dirham</option><option value="SAR">SAR — Saudi Riyal</option><option value="DZD">DZD — Algerian Dinar</option></select></label>
+              <label>Selling price<input name="sellingPrice" type="number" min="0" step="0.01" value="30" required></label>
+              <label>Unit cost<input name="unitCost" type="number" min="0" step="0.01" value="10" required></label>
+              <label>Referral fee (%)<input name="referralRatePct" type="number" min="0" max="100" step="0.1" value="15" required></label>
+              <label>Fulfilment cost<input name="fulfillmentCost" type="number" min="0" step="0.01" value="5" required></label>
+              <label>Shipping cost<input name="shippingCost" type="number" min="0" step="0.01" value="1" required></label>
+              <label>Advertising / other<input name="adCost" type="number" min="0" step="0.01" value="2" required></label>
+            </div>
+            <div class="economics-results"><div class="result-label">Estimated contribution / unit</div><div id="econ-net" class="economics-net">—</div><div id="econ-margin" class="economics-margin">Enter costs to estimate margin</div><div class="result-lines"><div><span>Referral fee</span><strong id="econ-referral">—</strong></div><div><span>Total costs</span><strong id="econ-costs">—</strong></div><div><span>Break-even price</span><strong id="econ-break-even">—</strong></div></div><p id="econ-error" class="error-text" role="status"></p></div>
+          </form>
+        </section>
+        <section class="settings-row">
+          <div><strong>Back up or clear this device</strong><p>Your browser storage is not a cloud backup. Export regularly, and do not use shared/public devices for business data.</p></div>
+          <div class="button-row"><label for="import-backup" class="button button-secondary file-button">Restore backup</label><input id="import-backup" type="file" accept=".json,application/json" hidden><button id="clear-workspace" class="button button-danger" type="button">Clear workspace</button></div>
+        </section>
+        <footer class="page-footer">Seller Ops Desk is an independent community tool. Always verify report definitions and marketplace rules before making business decisions.</footer>
+      </section>
+    </main>
+  </div>
+  <div id="toast" class="toast" hidden role="status" aria-live="polite"></div>
+</body>
+</html>

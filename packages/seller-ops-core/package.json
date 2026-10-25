@@ -1,0 +1,45 @@
+{
+  "name": "callledger-seller-ops-core",
+  "version": "0.1.0",
+  "description": "Local-first CSV/TSV report parsing, sales summaries, unit economics, and privacy-safe backups for seller operations.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hamdirabahksu-maker/call-ledger-ai-boost.git",
+    "directory": "packages/seller-ops-core"
+  },
+  "homepage": "https://github.com/hamdirabahksu-maker/call-ledger-ai-boost/tree/main/packages/seller-ops-core",
+  "bugs": {
+    "url": "https://github.com/hamdirabahksu-maker/call-ledger-ai-boost/issues"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "seller-ops",
+    "csv-parser",
+    "amazon-seller-central",
+    "sales-reports",
+    "local-first",
+    "privacy"
+  ]
+}

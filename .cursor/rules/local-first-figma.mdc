@@ -1,0 +1,13 @@
+---
+description: Local-first contribution workflow for CallLedger
+alwaysApply: true
+---
+
+# Contribution workflow
+
+- Treat the checked-in source as the canonical implementation.
+- Never commit `.env`, credentials, customer exports, screenshots of customer data, or production database dumps.
+- Use environment variables for deployment-specific URLs and secrets.
+- Keep business records and contact details out of test fixtures; use synthetic data and reserved example domains.
+- Run the relevant checks before proposing a change and describe any unverified integration clearly.
+- Do not claim a third-party integration is live unless its authorization and end-to-end behavior have been tested.

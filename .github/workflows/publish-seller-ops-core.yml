@@ -1,0 +1,41 @@
+name: Publish Seller Ops Core to npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_publish:
+        description: "Publish the package publicly to npm"
+        required: true
+        type: boolean
+        default: false
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    if: (github.event_name == 'workflow_dispatch' && inputs.confirm_publish == true) || (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'seller-ops-core-v'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node and npm registry
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - name: Verify package syntax
+        working-directory: packages/seller-ops-core
+        run: npm run check
+      - name: Run package tests
+        working-directory: packages/seller-ops-core
+        run: npm test
+      - name: Publish with provenance
+        working-directory: packages/seller-ops-core
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

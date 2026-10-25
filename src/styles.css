@@ -1,0 +1,162 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-amber: var(--amber);
+  --color-amber-foreground: var(--amber-foreground);
+  --color-steel: var(--steel);
+  --font-display: "Space Grotesk", "Arial Black", sans-serif;
+  --font-sans: "Inter Tight", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+:root {
+  --radius: 0.5rem;
+  /* Motion tokens (Figma 05 Motion) */
+  --dur-micro: 120ms;
+  --dur-ui: 200ms;
+  --dur-enter: 320ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Near-black charcoal stage */
+  --background: oklch(0.13 0.005 60);
+  --foreground: oklch(0.97 0.008 80);
+  --card: oklch(0.175 0.008 60);
+  --card-foreground: oklch(0.96 0.01 80);
+
+  --popover: oklch(0.20 0.012 60);
+  --popover-foreground: oklch(0.96 0.01 80);
+  --primary: oklch(0.78 0.17 65); /* amber */
+  --primary-foreground: oklch(0.16 0.02 60);
+  --secondary: oklch(0.26 0.014 60);
+  --secondary-foreground: oklch(0.96 0.01 80);
+  --muted: oklch(0.24 0.012 60);
+  --muted-foreground: oklch(0.70 0.015 70);
+  --accent: oklch(0.30 0.02 60);
+  --accent-foreground: oklch(0.96 0.01 80);
+  --destructive: oklch(0.62 0.22 27);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.30 0.014 60);
+  --input: oklch(0.24 0.012 60);
+  --ring: oklch(0.78 0.17 65);
+  --amber: oklch(0.78 0.17 65);
+  --amber-foreground: oklch(0.16 0.02 60);
+  --steel: oklch(0.42 0.015 60);
+}
+
+.dark {
+  --background: oklch(0.16 0.01 60);
+  --foreground: oklch(0.96 0.01 80);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html, body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+    font-weight: 700;
+  }
+}
+
+@utility text-balance { text-wrap: balance; }
+
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, oklch(0.30 0.014 60 / 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.30 0.014 60 / 0.35) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+@utility hero-mask {
+  mask-image: radial-gradient(ellipse 90% 60% at 50% 40%, black 40%, transparent 90%);
+}
+
+@keyframes cl-fade-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes cl-scale-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+@keyframes cl-hero-drift { 0% { transform: scale(1) translateY(0); } 50% { transform: scale(1.04) translateY(-8px); } 100% { transform: scale(1) translateY(0); } }
+
+@utility animate-fade-in { animation: cl-fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@utility animate-scale-in { animation: cl-scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@utility animate-hero-drift { animation: cl-hero-drift 22s ease-in-out infinite; }
+
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+/* ── Motion system (Figma 05 Motion) ───────────────────────── */
+@keyframes cl-page-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes cl-rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes cl-overlay-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cl-panel-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+@keyframes cl-toast-in { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes cl-shimmer { 0% { opacity: 0.06; } 50% { opacity: 0.12; } 100% { opacity: 0.06; } }
+
+@utility animate-page-enter { animation: cl-page-enter var(--dur-enter) var(--ease-out) both; }
+@utility animate-rise { animation: cl-rise var(--dur-enter) var(--ease-out) both; }
+@utility animate-overlay-in { animation: cl-overlay-in var(--dur-ui) var(--ease-out) both; }
+@utility animate-panel-in { animation: cl-panel-in 280ms var(--ease-out) both; }
+@utility animate-toast-in { animation: cl-toast-in 240ms var(--ease-out) both; }
+
+@utility skeleton {
+  background-color: var(--color-foreground);
+  animation: cl-shimmer 1.2s linear infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Stagger children ~60ms (max 6) */
+.stagger > * { animation: cl-rise var(--dur-enter) var(--ease-out) both; }
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 60ms; }
+.stagger > *:nth-child(3) { animation-delay: 120ms; }
+.stagger > *:nth-child(4) { animation-delay: 180ms; }
+.stagger > *:nth-child(5) { animation-delay: 240ms; }
+.stagger > *:nth-child(6) { animation-delay: 300ms; }
+
+@utility press {
+  transition: transform var(--dur-micro) var(--ease-out), filter var(--dur-micro) var(--ease-out),
+    background-color var(--dur-ui) var(--ease-out), border-color var(--dur-ui) var(--ease-out),
+    color var(--dur-ui) var(--ease-out);
+  &:hover { filter: brightness(1.08); }
+  &:active { transform: scale(0.98); }
+  &:disabled { transform: none; filter: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in, .animate-scale-in, .animate-hero-drift,
+  .animate-page-enter, .animate-rise, .animate-overlay-in, .animate-panel-in,
+  .animate-toast-in, .skeleton, .stagger > * { animation: none !important; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+

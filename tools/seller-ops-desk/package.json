@@ -1,0 +1,24 @@
+{
+  "name": "seller-ops-desk",
+  "version": "0.1.0",
+  "private": false,
+  "description": "A local-first workspace for marketplace sales reports, internal calls, follow-ups, tasks, and product economics.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test",
+    "check": "node --check app.js && node --check core.js && node --check server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "keywords": [
+    "seller-operations",
+    "amazon-seller-central",
+    "csv",
+    "sales-ops",
+    "local-first",
+    "open-source"
+  ]
+}

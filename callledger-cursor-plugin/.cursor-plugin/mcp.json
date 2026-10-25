@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "callledger": {
+      "type": "http",
+      "url": "https://YOUR_DEPLOYMENT_HOST/mcp"
+    }
+  }
+}

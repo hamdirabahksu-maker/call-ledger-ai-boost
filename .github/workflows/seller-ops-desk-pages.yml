@@ -1,0 +1,39 @@
+name: Publish Seller Ops Desk demo
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: seller-ops-desk-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Pages
+        uses: actions/configure-pages@v5
+      - name: Assemble static app only
+        run: |
+          mkdir -p _site/seller-ops-desk
+          cp tools/seller-ops-desk/index.html _site/seller-ops-desk/
+          cp tools/seller-ops-desk/app.js _site/seller-ops-desk/
+          cp tools/seller-ops-desk/core.js _site/seller-ops-desk/
+          cp tools/seller-ops-desk/styles.css _site/seller-ops-desk/
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
