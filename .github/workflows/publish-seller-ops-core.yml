@@ -24,18 +24,20 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Set up Node and npm registry
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
       - name: Verify package syntax
         working-directory: packages/seller-ops-core
         run: npm run check
       - name: Run package tests
         working-directory: packages/seller-ops-core
         run: npm test
-      - name: Publish with provenance
+      - name: Preview published package contents
         working-directory: packages/seller-ops-core
-        run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm pack --dry-run
+      - name: Publish package
+        working-directory: packages/seller-ops-core
+        run: npm publish --access public
