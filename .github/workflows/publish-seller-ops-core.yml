@@ -41,3 +41,7 @@ jobs:
       - name: Publish package
         working-directory: packages/seller-ops-core
         run: npm publish --access public
+        env:
+          # Used only as the one-time bootstrap path. Once npm Trusted Publishing
+          # is configured, npm's OIDC flow is preferred and no long-lived token is needed.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
