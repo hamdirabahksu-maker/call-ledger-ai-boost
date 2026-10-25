@@ -32,6 +32,9 @@ jobs:
       - name: Unit tests
         working-directory: packages/seller-ops-core
         run: npm test
+      - name: Verify package tarball contents
+        working-directory: packages/seller-ops-core
+        run: npm pack --dry-run
 
   app:
     name: Browser app
