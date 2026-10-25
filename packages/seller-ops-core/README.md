@@ -53,7 +53,27 @@ The library does not upload data. It is pure JavaScript and has no third-party r
 
 ## Publication status
 
-This package is prepared for npm publication but has **not yet been published**. Package-name availability must be verified and a maintainer must configure npm publishing credentials before making a release. Download counts and package dependents will be reported only after the registry provides real data.
+This package is prepared for npm publication but has **not yet been published**. Verify that `callledger-seller-ops-core` is available in the npm registry before publishing.
+
+### First publication
+
+The first release requires an npm account that can claim the package name. After reviewing the package contents and tests, a maintainer must either:
+- publish the first release from a local machine with npm login; or
+- add a short-lived/limited `NPM_TOKEN` GitHub Actions secret for the initial release.
+
+Do not put a token in the repository or in an issue.
+
+### Configure trusted publishing for subsequent releases
+
+The workflow at `.github/workflows/publish-seller-ops-core.yml` uses GitHub Actions OIDC (Node.js 24; npm CLI 11.5.1+). After the package exists, open its npm settings and add a **GitHub Actions Trusted Publisher** with:
+- GitHub owner: `hamdirabahksu-maker`
+- Repository: `call-ledger-ai-boost`
+- Workflow filename: `publish-seller-ops-core.yml`
+- No GitHub Environment is configured in the workflow.
+
+Then run the workflow with `confirm_publish=true` when intentionally publishing a new version. npm Trusted Publishing requires this npm-side configuration; a green GitHub test run alone does not publish the package.
+
+Download counts and dependent packages will only be reported after the registry provides real data.
 
 ## Development
 
