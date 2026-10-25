@@ -6,6 +6,10 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/seller-ops-desk-pages.yml"
+      - "tools/seller-ops-desk/index.html"
+      - "tools/seller-ops-desk/app.js"
+      - "tools/seller-ops-desk/core.js"
+      - "tools/seller-ops-desk/styles.css"
 
 permissions:
   contents: read
